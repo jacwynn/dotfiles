@@ -13,13 +13,29 @@ return {
     end,
   },
 
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
+  {
+    "3mpee3mpee/nvim_dw_sync",
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+    },
+    config = function ()
+      require("telescope").load_extension("nvim_dw_sync")
+      require("nvim_dw_sync").setup({})
+    end,
+    key = {
+      "<Leader>ds",
+      ":Telescope nvim_dw_sync open_telescope<CR>",
+      desc = "DW Sync open telescope",
+    }
+  },
+
+  {
+   	"nvim-treesitter/nvim-treesitter",
+    opts = {
+      ensure_installed = {
+        "vim", "lua", "vimdoc",
+        "html", "css", "scss", "c"
+      }
+    }
+  },
 }
