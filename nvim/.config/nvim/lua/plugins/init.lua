@@ -15,6 +15,7 @@ return {
 
   {
     "3mpee3mpee/nvim_dw_sync",
+    lazy = false,
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
