@@ -7,9 +7,10 @@ Personal macOS dotfiles: zsh (oh-my-zsh) + Neovim, symlinked into place via `ins
 ```
 .zshrc                    -> ~/.zshrc
 nvim/.config/nvim/         -> ~/.config/nvim
-ohmyzsh/.oh-my-zsh/         (legacy copy; the active oh-my-zsh install manages itself separately)
 install.sh                 bootstrap script for a new machine
 ```
+
+oh-my-zsh itself (`~/.oh-my-zsh`) is not tracked here — it's a separate, self-updating install (its own git clone), managed by oh-my-zsh's own installer/updater rather than this repo.
 
 ## New machine setup
 
