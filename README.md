@@ -29,6 +29,26 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 
 Read the comment block at the top of `install.sh` for SSH key setup if you want to push from a new machine (a plain clone only needs to pull).
 
+### If the machine's default GitHub account isn't jacwynn
+
+The HTTPS clone above works regardless (public repo, no auth needed to pull). Push access needs a second SSH identity scoped just to this repo, via an SSH config host alias:
+
+```bash
+ssh-keygen -t ed25519 -C "jacwynn key" -f ~/.ssh/id_ed25519_jacwynn
+
+# add to ~/.ssh/config:
+Host github.com-jacwynn
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_jacwynn
+
+# paste ~/.ssh/id_ed25519_jacwynn.pub into github.com/settings/keys (jacwynn's account)
+
+git clone git@github.com-jacwynn:jacwynn/dotfiles.git ~/dotfiles
+# or, if already cloned via HTTPS:
+git remote set-url origin git@github.com-jacwynn:jacwynn/dotfiles.git
+```
+
 **SFCC/Demandware work:** sandbox credentials live in a per-project `dw.json`, never in this repo. Create one in each SFCC project's root — see the [nvim_dw_sync README](https://github.com/3mpee3mpee/nvim_dw_sync) for the expected format.
 
 ## Neovim setup
