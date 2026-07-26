@@ -115,11 +115,27 @@ echo
 echo "== Installing system dependencies (Homebrew) =="
 
 # NOTE on Neovim version: this config's LSP setup uses vim.lsp.config()/vim.lsp.enable(),
-# which require Neovim 0.11+. `brew install neovim` currently gives you whatever the
-# latest formula is (0.12.x as of this writing) -- that's fine, it's a superset of 0.11.
-# There's no upper version ceiling to worry about; this config does not use vim.pack.
+# which require Neovim 0.11+. `brew install neovim` gives you whatever the latest formula
+# is (0.12.x as of this writing) -- that's fine, it's a superset of 0.11. There's no upper
+# version ceiling to worry about; this config does not use vim.pack.
+#
+# Checked separately from the rest below because "already installed" isn't good enough
+# here -- an existing pre-0.11 install (e.g. from before this repo required it) needs an
+# upgrade, not a skip.
+NVIM_MIN_VERSION="0.11.0"
+if command -v nvim >/dev/null 2>&1; then
+  nvim_version="$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+  if [ "$(printf '%s\n' "$NVIM_MIN_VERSION" "$nvim_version" | sort -V | head -1)" = "$NVIM_MIN_VERSION" ]; then
+    echo "ok:      neovim $nvim_version (>= $NVIM_MIN_VERSION required)"
+  else
+    echo "neovim $nvim_version is too old (need >= $NVIM_MIN_VERSION) -- upgrading."
+    brew upgrade neovim || brew install neovim
+  fi
+else
+  brew install neovim
+fi
+
 brew_formulae=(
-  neovim
   git
   ripgrep   # required by Telescope's live grep
   fd        # required by Telescope's file finder
