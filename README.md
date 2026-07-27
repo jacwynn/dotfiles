@@ -66,6 +66,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - Treesitter: added css/scss/javascript/typescript/tsx/json parsers
 - Enabled kickstart's optional `nvim-autopairs` (auto-closes `()`, `""`, `''`, etc as you type)
 - Gitsigns: enabled the recommended keymaps (git blame, hunk staging/reset/preview, diffs) — folded directly into the one gitsigns spec in `init.lua` rather than kept as a separate file, since declaring the same plugin twice at the top level was found to silently drop the custom sign icons instead of merging (see the NOTE above that spec)
+- Added `christoomey/vim-tmux-navigator` (the Neovim-side half — the tmux-side half is installed via TPM, see Tmux setup below) and removed kickstart's plain `<C-w><C-h>`-style window-nav keymaps in favor of it, so `C-h/j/k/l` seamlessly move between nvim splits *and* tmux panes with the same keys, including handing off back to tmux at a split boundary
 - `lua/custom/filetype.lua`: maps `.isml` (SFCC template files) to the `html` filetype
 - `lua/custom/plugins/dw-sync.lua`: `nvim_dw_sync` — Telescope-based cartridge upload for Demandware. Has two known upstream bugs (see the comment in that file); workaround is documented there.
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
@@ -149,7 +150,9 @@ If you forget everything else: hit `<leader>` and wait — `which-key` shows eve
 
 Prefix is remapped to **`C-s`** (not the default `C-b`). Plugins via TPM: `vim-tmux-navigator`, `tmux-themepack`, `tmux-resurrect`, `tmux-continuum`.
 
-**If `C-h/j/k/l` pane navigation isn't working**, TPM cloning itself (which `install.sh` does) is not the same as installing the plugins it manages — that needs one manual step: start tmux and press `<prefix> + I` (capital I) to have TPM actually fetch `vim-tmux-navigator` and the others. Check `ls ~/.tmux/plugins/vim-tmux-navigator` if unsure whether it's already installed.
+`vim-tmux-navigator` has two halves that both need to be present for seamless `C-h/j/k/l` navigation across both tmux panes and nvim splits:
+- **tmux-side**: installed via TPM (`~/.tmux/plugins/vim-tmux-navigator`). If pane navigation does nothing at all (all four directions), TPM cloning itself (which `install.sh` does) is not the same as installing the plugins it manages — start tmux and press `<prefix> + I` (capital I) to have TPM actually fetch it.
+- **nvim-side**: installed as a regular nvim plugin (`christoomey/vim-tmux-navigator` in `init.lua`). If navigation *into* an nvim pane works but you can't navigate back *out* of it, this half is missing or nvim's own `<C-w><C-h>`-style maps are shadowing it — nvim's plain window-nav keymaps only move within nvim's own splits and don't know how to hand off back to tmux at a split boundary.
 
 **Windows**
 | Key | Action |
@@ -169,7 +172,7 @@ Note: the tmux default `C-s p` (previous window) is **not** available here — `
 |---|---|
 | `C-s \|` | Split pane vertically (side by side) — custom |
 | `C-s -` | Split pane horizontally (stacked) — custom |
-| `C-h` / `C-j` / `C-k` / `C-l` | Move between panes — **no prefix needed**. Also moves between nvim splits with the same keys (vim-tmux-navigator detects when the active pane is running nvim and hands off to nvim's own `<C-h/j/k/l>` maps) |
+| `C-h` / `C-j` / `C-k` / `C-l` | Move between panes — **no prefix needed**. Also moves between nvim splits with the same keys, including handing back off to tmux at a split boundary (both halves of vim-tmux-navigator — tmux-side and nvim-side — required, see note above) |
 | `C-s h/j/k/l` | Resize active pane (repeatable — keep tapping within the timeout) |
 | `C-s m` | Toggle pane zoom (fullscreen) — custom |
 | `C-s x` | Kill current pane |
