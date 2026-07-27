@@ -69,6 +69,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - Added `christoomey/vim-tmux-navigator` (the Neovim-side half — the tmux-side half is installed via TPM, see Tmux setup below) and removed kickstart's plain `<C-w><C-h>`-style window-nav keymaps in favor of it, so `C-h/j/k/l` seamlessly move between nvim splits *and* tmux panes with the same keys, including handing off back to tmux at a split boundary
 - `lua/custom/filetype.lua`: maps `.isml` (SFCC template files) to the `html` filetype
 - `lua/custom/plugins/dw-sync.lua`: `nvim_dw_sync` — Telescope-based cartridge upload for Demandware. Has two known upstream bugs (see the comment in that file); workaround is documented there.
+- `lua/custom/plugins/harpoon.lua`: `harpoon` (harpoon2 branch) — mark a small working set of files and jump straight to them, instead of cycling through buffers. See Harpoon section below for keymaps and why its own suggested defaults (`<C-h>`, `<C-s>`) don't work in this setup.
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
 
 **Known quirks (see comments in `init.lua` for detail):**
@@ -145,6 +146,18 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `:LspInfo` | LSP attached to current buffer |
 
 If you forget everything else: hit `<leader>` and wait — `which-key` shows every available keybind live from wherever your cursor is.
+
+### Harpoon
+
+Mark a small working set of files (e.g. everything touched while building one feature) and jump straight to any of them — faster than cycling through `<leader><leader>` buffers or `:bnext`/`:bprev` once that list gets long.
+
+| Key | Action |
+|---|---|
+| `<leader>a` | Add current file to the harpoon list |
+| `<C-e>` | Toggle the quick-menu (view/reorder/remove marks) |
+| `<leader>1` / `2` / `3` / `4` | Jump straight to marked file 1–4 |
+
+Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neither works here: `<C-h>` is already `vim-tmux-navigator`'s move-left, and `<C-s>` is the tmux prefix key, so tmux swallows it before nvim ever sees it. Using `<leader>1-4` instead sidesteps both.
 
 ## Tmux setup
 
