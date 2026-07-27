@@ -191,6 +191,45 @@ if command -v nvm >/dev/null 2>&1; then
     nvm install --lts
     nvm alias default 'lts/*'
   fi
+  # `nvm alias default` only persists the default for *future* shells (ones
+  # that source nvm.sh and then run `nvm use default` themselves) -- it does
+  # NOT switch the node/npm already resolved on PATH in *this* script. `nvm
+  # use` does that. Needed before the SFCC debugger build step below, which
+  # otherwise silently picks up whatever old node happened to be on PATH
+  # already (hit this directly: --openssl-legacy-provider was rejected
+  # because it landed on a pre-17 node that predates the flag entirely).
+  nvm use default >/dev/null
+fi
+
+echo
+echo "== SFCC debugger (Prophet debug adapter) =="
+# Builds the same debug adapter the "Prophet Debugger" VS Code extension uses
+# (https://github.com/SqrTT/prophet), so nvim-dap can attach to an SFCC
+# sandbox the same way VS Code does. There's no published binary/npm package
+# for this -- the only way to get it is building from source, which is what
+# this does. Lives outside the dotfiles repo (~/.local/share) since it's a
+# build artifact, not config, same reasoning as TPM/lazy.nvim's plugin dirs.
+#
+# NOTE: its webpack 4 toolchain predates Node 17's OpenSSL 3 upgrade, which
+# removed the md4 hash algorithm webpack 4 depends on by default -- the build
+# fails with ERR_OSSL_EVP_UNSUPPORTED without NODE_OPTIONS=--openssl-legacy-provider.
+# Confirmed this actually builds successfully on Node 24 with that flag set.
+PROPHET_DIR="$HOME/.local/share/prophet-debugger"
+if [ -f "$PROPHET_DIR/dist/mockDebug.js" ]; then
+  echo "ok:      prophet debug adapter already built"
+elif command -v npm >/dev/null 2>&1; then
+  echo "Building the prophet debug adapter from source (one-time, ~1 minute)..."
+  rm -rf "$PROPHET_DIR"
+  git clone --depth 1 https://github.com/SqrTT/prophet.git "$PROPHET_DIR"
+  ( cd "$PROPHET_DIR" && NODE_OPTIONS=--openssl-legacy-provider npm install && NODE_OPTIONS=--openssl-legacy-provider npm run prepare )
+  if [ -f "$PROPHET_DIR/dist/mockDebug.js" ]; then
+    echo "ok:      built successfully"
+  else
+    echo "Build did not produce dist/mockDebug.js -- check the output above for errors."
+  fi
+else
+  echo "npm not found (nvm/Node install above may have failed) -- skipping. Re-run this"
+  echo "script once Node is available to build the SFCC debugger."
 fi
 
 echo
@@ -198,6 +237,12 @@ echo "== Reminder for SFCC/Demandware work =="
 echo "nvim_dw_sync reads sandbox credentials from a per-project dw.json (NOT tracked in"
 echo "this dotfiles repo). Create one in each SFCC project's root -- see the plugin's"
 echo "README for the expected format."
+echo
+echo "The SFCC debugger (Prophet adapter, see above) also reads dw.json, and additionally"
+echo "requires it to be strictly valid JSON -- if you've left old sandbox configs"
+echo "commented out in that file (// {...} blocks), remove them; a strict JSON parser"
+echo "(used here, and by the standalone Prophet VS Code extension too) will reject the"
+echo "whole file if anything follows the first closing brace."
 
 echo
 echo "Done. Set your terminal's font to the installed Nerd Font, then open nvim to let"

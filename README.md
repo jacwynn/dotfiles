@@ -70,6 +70,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - `lua/custom/filetype.lua`: maps `.isml` (SFCC template files) to the `html` filetype
 - `lua/custom/plugins/dw-sync.lua`: `nvim_dw_sync` — Telescope-based cartridge upload for Demandware. Has two known upstream bugs (see the comment in that file); workaround is documented there.
 - `lua/custom/plugins/harpoon.lua`: `harpoon` (harpoon2 branch) — mark a small working set of files and jump straight to them, instead of cycling through buffers. See Harpoon section below for keymaps and why its own suggested defaults (`<C-h>`, `<C-s>`) don't work in this setup.
+- `lua/custom/plugins/dap.lua`: `nvim-dap` + `nvim-dap-ui` — debugging (VS Code launch.json equivalent), including a custom SFCC/Demandware adapter. See Debugging section below — **branch note:** this landed on the `sfcc-debugger` branch, not yet merged to `main`, since the actual sandbox connection couldn't be tested from here.
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
 
 **Known quirks (see comments in `init.lua` for detail):**
@@ -157,7 +158,30 @@ Mark a small working set of files (e.g. everything touched while building one fe
 | `<C-e>` | Toggle the quick-menu (view/reorder/remove marks) |
 | `<leader>1` .. `7` | Jump straight to marked file 1–7 |
 
-Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neither works here: `<C-h>` is already `vim-tmux-navigator`'s move-left, and `<C-s>` is the tmux prefix key, so tmux swallows it before nvim ever sees it. Using `<leader>1-4` instead sidesteps both.
+Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neither works here: `<C-h>` is already `vim-tmux-navigator`'s move-left, and `<C-s>` is the tmux prefix key, so tmux swallows it before nvim ever sees it. Using `<leader>1-7` instead sidesteps both.
+
+### Debugging
+
+`nvim-dap` + `nvim-dap-ui` — the closest nvim equivalent to VS Code's debugger + `launch.json`. It can even read an existing `.vscode/launch.json` directly via `require('dap.ext.vscode').load_launchjs()`, though this setup doesn't wire that in by default.
+
+| Key | Action |
+|---|---|
+| `<F5>` | Start/continue debugging |
+| `<F1>` / `<F2>` / `<F3>` | Step into / over / out |
+| `<leader>b` | Toggle breakpoint |
+| `<leader>B` | Set a conditional breakpoint (prompts for the condition) |
+| `<F7>` | Toggle the debug UI (also shows last session's output) |
+
+**SFCC/Demandware debugging** (`dap.adapters.prophet` in `dap.lua`): attaches to a sandbox the same way the "Prophet Debugger" VS Code extension does — same debug adapter binary, in fact (built from [SqrTT/prophet](https://github.com/SqrTT/prophet); `install.sh` builds it into `~/.local/share/prophet-debugger`, since there's no published binary or npm package for it). Reads `dw.json` for sandbox credentials (same file `nvim_dw_sync` uses) and auto-detects cartridge folders (any directory containing a `.project` file with the SFCC marker string), so no extra per-project setup is needed beyond a valid `dw.json`.
+
+Verified, and not yet verified:
+- ✅ The adapter builds successfully from source (`NODE_OPTIONS=--openssl-legacy-provider` required — its webpack 4 toolchain predates Node 17's OpenSSL 3 upgrade)
+- ✅ Confirmed it's a genuine, protocol-compliant DAP server (sent it a raw `initialize` request directly, got a correct response back) — not something VS Code-specific
+- ✅ The full config/cartridge-discovery handshake (`prophet.getdebugger.config` → `DebuggerConfig` custom request) works end-to-end against synthetic test data
+- ❌ **Not tested against a real sandbox** — the actual SDAPI 2.0 network handshake needs verifying with real credentials, which isn't something that could be done from here
+- ⚠️ **Your existing `dw.json` files need a fix first**: both currently have old sandbox configs left commented out (`// {...}`) after the active block, which makes the file invalid JSON — any strict JSON parser (this one, and the real Prophet extension too) will reject the whole file if anything follows the first closing `}`. Remove the trailing commented blocks before trying this.
+
+This landed on the `sfcc-debugger` branch rather than `main` given the above — merge once it's confirmed working against a real sandbox.
 
 ## Tmux setup
 
