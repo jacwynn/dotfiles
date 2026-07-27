@@ -109,6 +109,7 @@ link() {
 echo "== Symlinking configs =="
 link "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo
@@ -140,6 +141,7 @@ brew_formulae=(
   ripgrep   # required by Telescope's live grep
   fd        # required by Telescope's file finder
   tree-sitter-cli # treesitter parser CLI (Homebrew split this from the `tree-sitter` library formula)
+  tmux
 )
 for f in "${brew_formulae[@]}"; do
   if brew list --formula "$f" >/dev/null 2>&1; then
@@ -148,6 +150,19 @@ for f in "${brew_formulae[@]}"; do
     brew install "$f"
   fi
 done
+
+echo
+echo "== tmux plugin manager (TPM) =="
+# ~/.tmux itself is NOT tracked in this repo -- it's just TPM's install location
+# (hardcoded as such by .tmux.conf's `run '~/.tmux/plugins/tpm/tpm'` line), not a
+# framework this config depends on.
+if [ -d "$HOME/.tmux/plugins/tpm" ]; then
+  echo "ok:      tpm already installed"
+else
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+echo "After this, start tmux and press <prefix> + I (capital i) once to have tpm"
+echo "install the actual plugin list (vim-tmux-navigator, tmux-resurrect, etc)."
 
 if ! brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1; then
   echo "Installing a Nerd Font (JetBrains Mono) for icons in nvim-tree/telescope/statusline..."

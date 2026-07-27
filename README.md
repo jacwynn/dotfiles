@@ -1,16 +1,19 @@
 # dotfiles
 
-Personal macOS dotfiles: zsh (oh-my-zsh) + Neovim, symlinked into place via `install.sh`.
+Personal macOS dotfiles: zsh (oh-my-zsh) + Neovim + tmux, symlinked into place via `install.sh`.
 
 ## Layout
 
 ```
 .zshrc                    -> ~/.zshrc
+.tmux.conf                -> ~/.tmux.conf
 nvim/.config/nvim/         -> ~/.config/nvim
 install.sh                 bootstrap script for a new machine
 ```
 
 oh-my-zsh itself (`~/.oh-my-zsh`) is not tracked here — it's a separate, self-updating install (its own git clone), managed by oh-my-zsh's own installer/updater rather than this repo.
+
+Similarly, `~/.tmux` is not tracked here — `.tmux.conf` hardcodes TPM (the tmux plugin manager) to live at `~/.tmux/plugins/tpm`, so that directory is just TPM's install location, not a framework this config depends on. `install.sh` clones TPM there if it's missing.
 
 ## New machine setup
 
@@ -22,10 +25,11 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 ```
 
 `install.sh` is idempotent (safe to re-run) and:
-- symlinks `.zshrc` and the nvim config into place
+- symlinks `.zshrc`, `.tmux.conf`, and the nvim config into place
 - installs Xcode Command Line Tools / Homebrew if missing
-- installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, and a Nerd Font
+- installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, `tmux`, and a Nerd Font
 - installs `nvm` + Node LTS if missing
+- clones TPM (tmux plugin manager) if missing — after that, start tmux and press `<prefix> + I` once to install the actual plugin list
 - checks whether SSH/`gh` push access to GitHub is actually working
 
 Read the comment block at the top of `install.sh` for SSH key setup if you want to push from a new machine (a plain clone only needs to pull).
