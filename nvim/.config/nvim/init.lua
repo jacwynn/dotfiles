@@ -722,6 +722,16 @@ require('lazy').setup({
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
+        -- Skip autoformat entirely inside SFCC/Demandware projects (marked by a
+        -- dw.json anywhere from this buffer up to its project root) -- cartridge
+        -- lint rules there often conflict with prettier's defaults. Manual format
+        -- via <leader>f still runs there if you want it for a specific file.
+        local bufname = vim.api.nvim_buf_get_name(bufnr)
+        if bufname ~= '' then
+          local dw_json = vim.fs.find('dw.json', { path = vim.fs.dirname(bufname), upward = true })[1]
+          if dw_json then return nil end
+        end
+
         -- You can specify filetypes to autoformat on save here:
         local enabled_filetypes = {
           lua = true,
