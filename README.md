@@ -149,6 +149,8 @@ If you forget everything else: hit `<leader>` and wait — `which-key` shows eve
 
 Prefix is remapped to **`C-s`** (not the default `C-b`). Plugins via TPM: `vim-tmux-navigator`, `tmux-themepack`, `tmux-resurrect`, `tmux-continuum`.
 
+**If `C-h/j/k/l` pane navigation isn't working**, TPM cloning itself (which `install.sh` does) is not the same as installing the plugins it manages — that needs one manual step: start tmux and press `<prefix> + I` (capital I) to have TPM actually fetch `vim-tmux-navigator` and the others. Check `ls ~/.tmux/plugins/vim-tmux-navigator` if unsure whether it's already installed.
+
 **Windows**
 | Key | Action |
 |---|---|
