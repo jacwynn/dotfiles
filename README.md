@@ -62,8 +62,10 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 
 **Customizations on top of stock kickstart:**
 - LSP: added `ts_ls`, `html`, `cssls`, `jsonls` (stock kickstart only ships `lua_ls`)
-- Formatting: prettier/prettierd wired up for html/css/scss/js/ts/json, format-on-save enabled for those plus lua
+- Formatting: prettier/prettierd wired up for html/css/scss/js/ts/json, format-on-save enabled for those plus lua — except inside SFCC/Demandware projects (detected via `dw.json` anywhere up the buffer's directory tree), where format-on-save is skipped entirely since prettier's defaults fight the project's own lint rules. Manual `<leader>f` still works there.
 - Treesitter: added css/scss/javascript/typescript/tsx/json parsers
+- Enabled kickstart's optional `nvim-autopairs` (auto-closes `()`, `""`, `''`, etc as you type)
+- Gitsigns: enabled the recommended keymaps (git blame, hunk staging/reset/preview, diffs) — folded directly into the one gitsigns spec in `init.lua` rather than kept as a separate file, since declaring the same plugin twice at the top level was found to silently drop the custom sign icons instead of merging (see the NOTE above that spec)
 - `lua/custom/filetype.lua`: maps `.isml` (SFCC template files) to the `html` filetype
 - `lua/custom/plugins/dw-sync.lua`: `nvim_dw_sync` — Telescope-based cartridge upload for Demandware. Has two known upstream bugs (see the comment in that file); workaround is documented there.
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
@@ -71,6 +73,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 **Known quirks (see comments in `init.lua` for detail):**
 - nvim-treesitter's `main` branch has been observed serving two different, incompatible APIs across reinstalls — the config detects which one is present at runtime and uses that, rather than assuming one.
 - `mason-lspconfig`'s registry refresh can occasionally throw a background (non-fatal) error if it and `mason.nvim` fall out of sync with each other. Doesn't block anything else from loading; if LSP servers aren't auto-installing, run `:Mason` manually.
+- Declaring the same plugin twice at the top level of the `require('lazy').setup({...})` list does not reliably deep-merge `opts` — test it before assuming it will.
 
 ### Commands — the 80/20
 
@@ -111,6 +114,18 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `<C-y>` (insert) | Accept completion |
 | `jk` (insert) | `<Esc>` |
 | `;` (normal) | `:` |
+| `(`, `"`, `'`, etc | Auto-closed in pairs as you type (nvim-autopairs) |
+
+**Git (gitsigns)** — like GitLens' inline blame, built in rather than a separate plugin
+| Key | Action |
+|---|---|
+| `<leader>hb` | Blame current line (full popup) |
+| `<leader>tb` | Toggle inline blame (shows on every line, like GitLens) |
+| `<leader>hp` | Preview hunk diff |
+| `<leader>hs` / `<leader>hr` | Stage / reset hunk |
+| `<leader>hS` / `<leader>hR` | Stage / reset whole buffer |
+| `<leader>hd` / `<leader>hD` | Diff against index / last commit |
+| `]c` / `[c` | Jump to next / previous change |
 
 **Windows & general**
 | Key | Action |
@@ -129,3 +144,40 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `:LspInfo` | LSP attached to current buffer |
 
 If you forget everything else: hit `<leader>` and wait — `which-key` shows every available keybind live from wherever your cursor is.
+
+## Tmux setup
+
+Prefix is remapped to **`C-s`** (not the default `C-b`). Plugins via TPM: `vim-tmux-navigator`, `tmux-themepack`, `tmux-resurrect`, `tmux-continuum`.
+
+**Windows**
+| Key | Action |
+|---|---|
+| `C-s c` | New window |
+| `C-s n` | Next window |
+| `C-s w` | Interactive list of all windows |
+| `C-s <number>` | Jump to window N (e.g. `C-s 2`) |
+| `C-s ,` | Rename current window |
+| `C-s &` | Kill current window |
+| `C-s C-s` | Jump to last active window (custom — double-tap prefix) |
+
+Note: the tmux default `C-s p` (previous window) is **not** available here — `p` is rebound to paste-buffer (see Copy mode below). Use `C-s w` or a window number instead.
+
+**Panes**
+| Key | Action |
+|---|---|
+| `C-s \|` | Split pane vertically (side by side) — custom |
+| `C-s -` | Split pane horizontally (stacked) — custom |
+| `C-h` / `C-j` / `C-k` / `C-l` | Move between panes — **no prefix needed**. Also moves between nvim splits with the same keys (vim-tmux-navigator detects when the active pane is running nvim and hands off to nvim's own `<C-h/j/k/l>` maps) |
+| `C-s h/j/k/l` | Resize active pane (repeatable — keep tapping within the timeout) |
+| `C-s m` | Toggle pane zoom (fullscreen) — custom |
+| `C-s x` | Kill current pane |
+
+**Copy mode / misc**
+| Key | Action |
+|---|---|
+| `C-s [` | Enter copy mode |
+| `v` (in copy mode) | Begin selection — custom, vi-style |
+| `y` (in copy mode) | Copy selection — custom |
+| `C-s p` | Paste buffer — custom (not the tmux default previous-window) |
+| `C-s r` | Reload `~/.tmux.conf` — custom |
+| `C-k` | Clear scrollback history — custom, no prefix |
