@@ -155,7 +155,7 @@ Mark a small working set of files (e.g. everything touched while building one fe
 |---|---|
 | `<leader>a` | Add current file to the harpoon list |
 | `<C-e>` | Toggle the quick-menu (view/reorder/remove marks) |
-| `<leader>1` / `2` / `3` / `4` | Jump straight to marked file 1–4 |
+| `<leader>1` .. `7` | Jump straight to marked file 1–7 |
 
 Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neither works here: `<C-h>` is already `vim-tmux-navigator`'s move-left, and `<C-s>` is the tmux prefix key, so tmux swallows it before nvim ever sees it. Using `<leader>1-4` instead sidesteps both.
 
