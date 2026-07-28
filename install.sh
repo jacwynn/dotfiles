@@ -211,25 +211,31 @@ echo "== SFCC debugger (Prophet debug adapter) =="
 # build artifact, not config, same reasoning as TPM/lazy.nvim's plugin dirs.
 #
 # NOTE: its webpack 4 toolchain predates Node 17's OpenSSL 3 upgrade, which
-# removed the md4 hash algorithm webpack 4 depends on by default -- the build
-# fails with ERR_OSSL_EVP_UNSUPPORTED without NODE_OPTIONS=--openssl-legacy-provider.
-# Confirmed this actually builds successfully on Node 24 with that flag set.
+# removed the md4 hash algorithm webpack 4 depends on by default. The usual
+# workaround is NODE_OPTIONS=--openssl-legacy-provider, but that flag isn't
+# guaranteed to be recognized on every Node build/distribution -- hit exactly
+# that on a second machine ("--openssl-legacy-provider is not allowed in
+# NODE_OPTIONS"). Sidestepping the whole problem by building with Node 16
+# instead (predates the OpenSSL 3 upgrade entirely, confirmed this builds
+# clean with no flag needed) rather than depending on flag support in
+# whatever Node happens to be default.
 PROPHET_DIR="$HOME/.local/share/prophet-debugger"
 if [ -f "$PROPHET_DIR/dist/mockDebug.js" ]; then
   echo "ok:      prophet debug adapter already built"
-elif command -v npm >/dev/null 2>&1; then
+elif command -v nvm >/dev/null 2>&1; then
   echo "Building the prophet debug adapter from source (one-time, ~1 minute)..."
+  nvm install 16 >/dev/null
   rm -rf "$PROPHET_DIR"
   git clone --depth 1 https://github.com/SqrTT/prophet.git "$PROPHET_DIR"
-  ( cd "$PROPHET_DIR" && NODE_OPTIONS=--openssl-legacy-provider npm install && NODE_OPTIONS=--openssl-legacy-provider npm run prepare )
+  ( cd "$PROPHET_DIR" && nvm exec 16 -- npm install && nvm exec 16 -- npm run prepare )
   if [ -f "$PROPHET_DIR/dist/mockDebug.js" ]; then
     echo "ok:      built successfully"
   else
     echo "Build did not produce dist/mockDebug.js -- check the output above for errors."
   fi
 else
-  echo "npm not found (nvm/Node install above may have failed) -- skipping. Re-run this"
-  echo "script once Node is available to build the SFCC debugger."
+  echo "nvm not found (install above may have failed) -- skipping. Re-run this script"
+  echo "once nvm is available to build the SFCC debugger."
 fi
 
 echo
