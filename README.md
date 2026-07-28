@@ -175,13 +175,17 @@ Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neith
 **SFCC/Demandware debugging** (`dap.adapters.prophet` in `dap.lua`): attaches to a sandbox the same way the "Prophet Debugger" VS Code extension does — same debug adapter binary, in fact (built from [SqrTT/prophet](https://github.com/SqrTT/prophet); `install.sh` builds it into `~/.local/share/prophet-debugger`, since there's no published binary or npm package for it). Reads `dw.json` for sandbox credentials (same file `nvim_dw_sync` uses) and auto-detects cartridge folders (any directory containing a `.project` file with the SFCC marker string), so no extra per-project setup is needed beyond a valid `dw.json`.
 
 Verified against a real sandbox:
-- ✅ The adapter builds successfully from source, patched during the build (see below)
+- ✅ The adapter builds successfully from source (two patches applied during the build, see below)
 - ✅ Confirmed it's a genuine, protocol-compliant DAP server (sent it a raw `initialize` request directly, got a correct response back) — not something VS Code-specific
 - ✅ The full config/cartridge-discovery handshake (`prophet.getdebugger.config` → `DebuggerConfig` custom request) works end-to-end, both against synthetic test data and a live sandbox — connects successfully, "waiting for breakpoint hit..." confirmed
-- ⚠️ **Breakpoint-hit detection had a real bug, now patched but not yet re-verified against a live sandbox** — see below
+- ❌ **Breakpoint-hit detection is still broken as of the last real test** — see the status below, this is actively being debugged
 - ⚠️ **Your `dw.json` files need to be strictly valid JSON**: if you've left old sandbox configs commented out (`// {...}`) after the active block, that breaks any strict JSON parser (this one, and the real Prophet extension too) — remove trailing commented blocks.
 
-**Upstream bug found and patched** (applied automatically by `install.sh`'s build step, see the comment there for the exact `sed` patch): the adapter's HTTP client passed a full absolute URL into Node's `path` request option instead of just the path portion. Against a real sandbox this caused `GET /threads` (the poll that detects a hit breakpoint) to come back as a raw HTTP 301 redirect stub instead of JSON — some CDN/edge layer in front of the sandbox was normalizing the malformed request specifically for GET, leaving POST/DELETE calls unaffected. Traced via `nvim-dap`'s `dap.set_log_level('TRACE')` and the adapter's own `verbose` config flag, confirmed via the exact raw response body (`Moved Permanently`) in the logs; fixed by extracting just the pathname before building. **This fix itself hasn't been re-tested against the real sandbox yet** — the next debug session should confirm whether breakpoints now actually get hit.
+**Breakpoint-hit detection — status (`install.sh`'s build step patches both of these, see comments there for the exact diffs):**
+1. **Patch 1** (real bug, but not the full story): the adapter's HTTP client passed a full absolute URL into Node's `path` request option instead of just the path portion. Applied and rebuilt — confirmed via shifted byte offsets in the error output that the new code was actually running — but `GET /threads` (the poll that detects a hit breakpoint) still came back as an HTTP redirect afterward. So this was a real bug, just not what's actually causing the failure.
+2. **Patch 2** (diagnostic, not yet tested): `httpRequest()` silently treated any 3xx response as a success, feeding the redirect's HTML stub straight into `JSON.parse()` instead of surfacing it as a redirect. Patched to reject loudly with the actual `Location` header value instead of a generic stub, so the next real sandbox test will show exactly where it's being redirected to (previously only the generic "Moved Permanently" body text was visible, not the true destination) — that's the key missing piece for finding the actual root cause.
+
+Next step: rebuild with these patches, reproduce against the real sandbox, and read the new error message for the actual redirect target.
 
 ## Tmux setup
 

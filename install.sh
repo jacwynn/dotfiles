@@ -227,17 +227,25 @@ elif command -v nvm >/dev/null 2>&1; then
   nvm install 16 >/dev/null
   rm -rf "$PROPHET_DIR"
   git clone --depth 1 https://github.com/SqrTT/prophet.git "$PROPHET_DIR"
-  # Upstream bug (confirmed against a real sandbox, traced via nvim-dap's TRACE
-  # logging): Connection.ts builds the HTTP request's `path` option as the full
+
+  # Patch 1: Connection.ts builds the HTTP request's `path` option as the full
   # absolute URL (options.baseUrl + options.uri) instead of just the path --
   # Node's `path` option should never contain a scheme/host when `hostname` is
-  # also set separately (which it is, right above). Against a real sandbox this
-  # made GET /threads (used to poll for hit breakpoints) come back as a raw
-  # HTTP 301 redirect stub instead of JSON, breaking breakpoint detection
-  # entirely -- likely some CDN/edge layer in front of the sandbox
-  # canonicalizing the malformed absolute-URI-as-path for GET specifically
-  # (POST/DELETE calls were unaffected). Fixed by extracting just the pathname.
+  # also set separately (which it is). This alone did NOT fix the redirect
+  # seen against a real sandbox (confirmed: rebuilt, byte offsets in the
+  # resulting error shifted as expected, so the new code was running -- but
+  # GET /threads still came back redirected). Kept anyway since it's still a
+  # real correctness bug, just not the full story.
   sed -i.bak 's|path: options\.baseUrl + options\.uri,|path: new URL(options.baseUrl).pathname + options.uri,|' "$PROPHET_DIR/src/Connection.ts"
+
+  # Patch 2: httpRequest() silently treats any non-4xx/5xx response as success,
+  # including 3xx redirects -- so a redirect's HTML stub body gets handed to
+  # JSON.parse() downstream instead of being recognized as a redirect at all.
+  # This turns a silent, hard-to-diagnose failure into a loud one that reports
+  # the actual Location header, so if this fires again the real target URL is
+  # visible instead of having to infer it from a generic redirect stub.
+  perl -0777 -pi -e "s/response\.once\('end', \(\) => \{\n\t\t\t\t\tif \(response\.statusCode && response\.statusCode >= 400\) \{\n\t\t\t\t\t\treject\(response\.statusMessage \|\| response\.statusCode\);\n\t\t\t\t\t\} else \{/response.once('end', () => {\n\t\t\t\t\tif (response.statusCode && response.statusCode >= 300 && response.statusCode < 400) {\n\t\t\t\t\t\treject(new Error('HTTP ' + response.statusCode + ' redirect to ' + response.headers.location + ' for ' + options.method + ' ' + options.hostname + options.uri));\n\t\t\t\t\t} else if (response.statusCode && response.statusCode >= 400) {\n\t\t\t\t\t\treject(response.statusMessage || response.statusCode);\n\t\t\t\t\t} else {/" "$PROPHET_DIR/src/Connection.ts"
+
   rm -f "$PROPHET_DIR/src/Connection.ts.bak"
   ( cd "$PROPHET_DIR" && nvm exec 16 -- npm install && nvm exec 16 -- npm run prepare )
   if [ -f "$PROPHET_DIR/dist/mockDebug.js" ]; then
