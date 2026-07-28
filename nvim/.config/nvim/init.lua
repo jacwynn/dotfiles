@@ -233,6 +233,29 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function() vim.hl.on_yank() end,
 })
 
+-- Pick up file changes made outside Neovim (e.g. an AI coding tool editing a
+-- file you have open). `autoread` alone isn't enough -- Neovim only checks a
+-- file's mtime at specific trigger points, not continuously, so without an
+-- explicit `:checktime` here an external edit stays invisible until something
+-- else happens to trigger a check. FocusGained/BufEnter catch switching back
+-- to Neovim (FocusGained requires the terminal to forward focus events --
+-- `focus-events on` is set in this dotfiles' .tmux.conf); CursorHold/CursorHoldI
+-- (on updatetime, 250ms above) catch it even while staying in the same Neovim
+-- window/pane the whole time.
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
+  desc = 'Check for file changes made outside Neovim and reload the buffer',
+  group = vim.api.nvim_create_augroup('kickstart-checktime', { clear = true }),
+  callback = function()
+    if vim.fn.mode() ~= 'c' and vim.bo.buftype == '' then vim.cmd 'checktime' end
+  end,
+})
+vim.api.nvim_create_autocmd('FileChangedShellPost', {
+  desc = 'Notify when a buffer was reloaded from an external change',
+  group = vim.api.nvim_create_augroup('kickstart-checktime-notify', { clear = true }),
+  callback = function() vim.notify('File changed on disk, buffer reloaded', vim.log.levels.INFO) end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
