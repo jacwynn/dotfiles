@@ -189,9 +189,11 @@ Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neith
 | REPL | Evaluate any expression in the current stopped context (type it, hit Enter) |
 | Console | Raw adapter output (errors, logs) |
 
+**Moving between panels without a mouse:** every panel is a regular Neovim split, so the normal `<C-h>`/`<C-j>`/`<C-k>`/`<C-l>` window-nav keys (wired to `vim-tmux-navigator` in this config) move between them — `<C-h>` from the main editor into the sidebar, `<C-j>`/`<C-k>` to move up/down between Scopes/Breakpoints/Stacks/Watches, `<C-l>` back to the editor. `<C-w>w` / `<C-w>p` also cycle through windows if you'd rather not think about direction.
+
 Keys inside any panel: `<CR>` expand a variable, `o` jump to source location, `w` add to Watches, `d` remove, `e` edit a watch expression, `r` send value to REPL.
 
-Typical flow once stopped at a breakpoint: check **Scopes** for local variable values, move into the **REPL** panel to evaluate arbitrary expressions, step with `<F1>`/`<F2>`/`<F3>`/`<F5>`, click a different **Stacks** frame to see the caller's variables, `w` on a Scopes variable to pin it in **Watches** so it's visible across steps.
+Typical flow once stopped at a breakpoint: check **Scopes** for local variable values, move into the **REPL** panel to evaluate arbitrary expressions, step with `<F1>`/`<F2>`/`<F3>`/`<F5>`, move to the **Stacks** panel and press `<CR>` on a different frame to see the caller's variables, `w` on a Scopes variable to pin it in **Watches** so it's visible across steps.
 
 **SFCC/Demandware debugging** (`dap.adapters.prophet` in `dap.lua`): attaches to a sandbox the same way the "Prophet Debugger" VS Code extension does — same debug adapter binary, in fact (built from [SqrTT/prophet](https://github.com/SqrTT/prophet); `install.sh` builds it into `~/.local/share/prophet-debugger`, since there's no published binary or npm package for it). Reads `dw.json` for sandbox credentials (same file `nvim_dw_sync` uses) and auto-detects cartridge folders (any directory containing a `.project` file with the SFCC marker string), so no extra per-project setup is needed beyond a valid `dw.json`.
 
