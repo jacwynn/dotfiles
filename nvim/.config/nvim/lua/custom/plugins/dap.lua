@@ -127,6 +127,13 @@ return {
         vim.notify('Prophet debugger: no cartridges found (no .project files with the SFCC marker)', vim.log.levels.WARN)
       end
 
+      -- TEMPORARY diagnostic: adapter's Connection class checks config.verbose
+      -- and, if set, logs every raw request/response body (routed through the
+      -- same OutputEvent channel dap.log already captures). Needed to see the
+      -- actual sandbox response causing `body.breakpoints.map` and the /threads
+      -- JSON.parse failures -- remove once that's identified.
+      config.verbose = true
+
       session:request('DebuggerConfig', { config = config, cartridges = cartridges })
     end
 
