@@ -70,7 +70,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - `lua/custom/filetype.lua`: maps `.isml` (SFCC template files) to the `html` filetype
 - `lua/custom/plugins/dw-sync.lua`: `nvim_dw_sync` — Telescope-based cartridge upload for Demandware. Has two known upstream bugs (see the comment in that file); workaround is documented there.
 - `lua/custom/plugins/harpoon.lua`: `harpoon` (harpoon2 branch) — mark a small working set of files and jump straight to them, instead of cycling through buffers. See Harpoon section below for keymaps and why its own suggested defaults (`<C-h>`, `<C-s>`) don't work in this setup.
-- `lua/custom/plugins/dap.lua`: `nvim-dap` + `nvim-dap-ui` — debugging (VS Code launch.json equivalent), including a custom SFCC/Demandware adapter. See Debugging section below — **branch note:** this landed on the `sfcc-debugger` branch, not yet merged to `main`, since the actual sandbox connection couldn't be tested from here.
+- `lua/custom/plugins/dap.lua`: `nvim-dap` + `nvim-dap-ui` — debugging (VS Code launch.json equivalent), including a custom SFCC/Demandware adapter, verified end-to-end against a real sandbox (see Debugging section below). Currently on the `sfcc-debugger` branch, not yet merged to `main`.
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
 
 **Known quirks (see comments in `init.lua` for detail):**
@@ -174,14 +174,14 @@ Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neith
 
 **SFCC/Demandware debugging** (`dap.adapters.prophet` in `dap.lua`): attaches to a sandbox the same way the "Prophet Debugger" VS Code extension does — same debug adapter binary, in fact (built from [SqrTT/prophet](https://github.com/SqrTT/prophet); `install.sh` builds it into `~/.local/share/prophet-debugger`, since there's no published binary or npm package for it). Reads `dw.json` for sandbox credentials (same file `nvim_dw_sync` uses) and auto-detects cartridge folders (any directory containing a `.project` file with the SFCC marker string), so no extra per-project setup is needed beyond a valid `dw.json`.
 
-Verified, and not yet verified:
-- ✅ The adapter builds successfully from source (`NODE_OPTIONS=--openssl-legacy-provider` required — its webpack 4 toolchain predates Node 17's OpenSSL 3 upgrade)
+Verified against a real sandbox:
+- ✅ The adapter builds successfully from source, patched during the build (see below)
 - ✅ Confirmed it's a genuine, protocol-compliant DAP server (sent it a raw `initialize` request directly, got a correct response back) — not something VS Code-specific
-- ✅ The full config/cartridge-discovery handshake (`prophet.getdebugger.config` → `DebuggerConfig` custom request) works end-to-end against synthetic test data
-- ❌ **Not tested against a real sandbox** — the actual SDAPI 2.0 network handshake needs verifying with real credentials, which isn't something that could be done from here
-- ⚠️ **Your existing `dw.json` files need a fix first**: both currently have old sandbox configs left commented out (`// {...}`) after the active block, which makes the file invalid JSON — any strict JSON parser (this one, and the real Prophet extension too) will reject the whole file if anything follows the first closing `}`. Remove the trailing commented blocks before trying this.
+- ✅ The full config/cartridge-discovery handshake (`prophet.getdebugger.config` → `DebuggerConfig` custom request) works end-to-end, both against synthetic test data and a live sandbox — connects successfully, "waiting for breakpoint hit..." confirmed
+- ⚠️ **Breakpoint-hit detection had a real bug, now patched but not yet re-verified against a live sandbox** — see below
+- ⚠️ **Your `dw.json` files need to be strictly valid JSON**: if you've left old sandbox configs commented out (`// {...}`) after the active block, that breaks any strict JSON parser (this one, and the real Prophet extension too) — remove trailing commented blocks.
 
-This landed on the `sfcc-debugger` branch rather than `main` given the above — merge once it's confirmed working against a real sandbox.
+**Upstream bug found and patched** (applied automatically by `install.sh`'s build step, see the comment there for the exact `sed` patch): the adapter's HTTP client passed a full absolute URL into Node's `path` request option instead of just the path portion. Against a real sandbox this caused `GET /threads` (the poll that detects a hit breakpoint) to come back as a raw HTTP 301 redirect stub instead of JSON — some CDN/edge layer in front of the sandbox was normalizing the malformed request specifically for GET, leaving POST/DELETE calls unaffected. Traced via `nvim-dap`'s `dap.set_log_level('TRACE')` and the adapter's own `verbose` config flag, confirmed via the exact raw response body (`Moved Permanently`) in the logs; fixed by extracting just the pathname before building. **This fix itself hasn't been re-tested against the real sandbox yet** — the next debug session should confirm whether breakpoints now actually get hit.
 
 ## Tmux setup
 

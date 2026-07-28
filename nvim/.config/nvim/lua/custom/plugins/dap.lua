@@ -9,20 +9,24 @@
 --      https://github.com/SqrTT/prophet -- see install.sh for the build
 --      step, which must run before this works).
 --
--- SFCC handshake, verified directly against a real build of that adapter:
--- on session start it fires a custom DAP event named
--- "prophet.getdebugger.config" and then waits. The client is expected to
--- respond with a custom "DebuggerConfig" request containing the sandbox
--- credentials (read from dw.json, same file nvim_dw_sync uses) and the list
--- of cartridge directories in the project (a "cartridge" is any directory
--- containing a .project file whose content includes the marker string
--- "com.demandware.studio.core.beehiveNature" -- this is exactly what the
--- VS Code extension's own client-side code does; replicated here since
--- nvim-dap has no equivalent built in). Confirmed via a raw DAP handshake
--- test that the adapter is a genuine, protocol-compliant stdio DAP server,
--- not something VS Code-specific -- but the actual sandbox connection (SDAPI
--- 2.0, over the network) has NOT been tested against a real sandbox from
--- here and needs verification against one.
+-- SFCC handshake, verified end-to-end against a real sandbox: on session
+-- start the adapter fires a custom DAP event named "prophet.getdebugger.config"
+-- and waits. The client is expected to respond with a custom "DebuggerConfig"
+-- request containing the sandbox credentials (read from dw.json, same file
+-- nvim_dw_sync uses) and the list of cartridge directories in the project (a
+-- "cartridge" is any directory containing a .project file whose content
+-- includes the marker string "com.demandware.studio.core.beehiveNature" --
+-- this is exactly what the VS Code extension's own client-side code does;
+-- replicated here since nvim-dap has no equivalent built in).
+--
+-- One upstream bug was found and patched during setup (see install.sh's
+-- build step for the exact patch + explanation): the adapter's HTTP client
+-- passed a full absolute URL into Node's `path` request option instead of
+-- just the path, which some CDN/edge layer in front of the sandbox
+-- normalized with an HTTP 301 redirect for GET requests specifically -- this
+-- broke breakpoint-hit polling (GET /threads) while leaving POST/DELETE
+-- calls unaffected, since 301 response bodies were fed straight into
+-- JSON.parse. Confirmed via nvim-dap's TRACE logging against a real sandbox.
 local PROPHET_ADAPTER_PATH = vim.fn.expand '~/.local/share/prophet-debugger/dist/mockDebug.js'
 
 ---@return string|nil
@@ -127,13 +131,6 @@ return {
         vim.notify('Prophet debugger: no cartridges found (no .project files with the SFCC marker)', vim.log.levels.WARN)
       end
 
-      -- TEMPORARY diagnostic: adapter's Connection class checks config.verbose
-      -- and, if set, logs every raw request/response body (routed through the
-      -- same OutputEvent channel dap.log already captures). Needed to see the
-      -- actual sandbox response causing `body.breakpoints.map` and the /threads
-      -- JSON.parse failures -- remove once that's identified.
-      config.verbose = true
-
       session:request('DebuggerConfig', { config = config, cartridges = cartridges })
     end
 
@@ -142,17 +139,6 @@ return {
       type = 'prophet',
       request = 'launch',
       name = 'SFCC: Attach to Sandbox',
-      -- Enables the adapter's own verbose logging (its source checks
-      -- args.trace and switches to Logger.LogLevel.Verbose + logToFile).
-      -- Temporary, for diagnosing the /threads polling failure -- remove
-      -- once that's resolved.
-      trace = true,
     })
-
-    -- Also log the raw DAP protocol traffic nvim-dap sends/receives, so we
-    -- can see exactly what setBreakpoints/configurationDone sequence goes
-    -- out relative to launch -- not just what the adapter itself logs.
-    -- Log file: :lua print(require('dap').session and vim.fn.stdpath('log') .. '/dap.log' or 'no active session')
-    dap.set_log_level 'TRACE'
   end,
 }

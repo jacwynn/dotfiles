@@ -227,6 +227,18 @@ elif command -v nvm >/dev/null 2>&1; then
   nvm install 16 >/dev/null
   rm -rf "$PROPHET_DIR"
   git clone --depth 1 https://github.com/SqrTT/prophet.git "$PROPHET_DIR"
+  # Upstream bug (confirmed against a real sandbox, traced via nvim-dap's TRACE
+  # logging): Connection.ts builds the HTTP request's `path` option as the full
+  # absolute URL (options.baseUrl + options.uri) instead of just the path --
+  # Node's `path` option should never contain a scheme/host when `hostname` is
+  # also set separately (which it is, right above). Against a real sandbox this
+  # made GET /threads (used to poll for hit breakpoints) come back as a raw
+  # HTTP 301 redirect stub instead of JSON, breaking breakpoint detection
+  # entirely -- likely some CDN/edge layer in front of the sandbox
+  # canonicalizing the malformed absolute-URI-as-path for GET specifically
+  # (POST/DELETE calls were unaffected). Fixed by extracting just the pathname.
+  sed -i.bak 's|path: options\.baseUrl + options\.uri,|path: new URL(options.baseUrl).pathname + options.uri,|' "$PROPHET_DIR/src/Connection.ts"
+  rm -f "$PROPHET_DIR/src/Connection.ts.bak"
   ( cd "$PROPHET_DIR" && nvm exec 16 -- npm install && nvm exec 16 -- npm run prepare )
   if [ -f "$PROPHET_DIR/dist/mockDebug.js" ]; then
     echo "ok:      built successfully"
