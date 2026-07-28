@@ -249,6 +249,9 @@ rtp:prepend(lazypath)
 -- Custom filetype associations (e.g. SFCC .isml templates)
 require 'custom.filetype'
 
+-- Disable editorconfig's trim_trailing_whitespace inside SFCC projects
+require 'custom.sfcc-editorconfig'
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
