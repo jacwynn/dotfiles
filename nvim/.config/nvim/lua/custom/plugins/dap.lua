@@ -135,6 +135,17 @@ return {
       type = 'prophet',
       request = 'launch',
       name = 'SFCC: Attach to Sandbox',
+      -- Enables the adapter's own verbose logging (its source checks
+      -- args.trace and switches to Logger.LogLevel.Verbose + logToFile).
+      -- Temporary, for diagnosing the /threads polling failure -- remove
+      -- once that's resolved.
+      trace = true,
     })
+
+    -- Also log the raw DAP protocol traffic nvim-dap sends/receives, so we
+    -- can see exactly what setBreakpoints/configurationDone sequence goes
+    -- out relative to launch -- not just what the adapter itself logs.
+    -- Log file: :lua print(require('dap').session and vim.fn.stdpath('log') .. '/dap.log' or 'no active session')
+    dap.set_log_level 'TRACE'
   end,
 }
