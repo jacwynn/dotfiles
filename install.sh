@@ -228,15 +228,21 @@ elif command -v nvm >/dev/null 2>&1; then
   rm -rf "$PROPHET_DIR"
   git clone --depth 1 https://github.com/SqrTT/prophet.git "$PROPHET_DIR"
 
-  # Patch 1: Connection.ts builds the HTTP request's `path` option as the full
-  # absolute URL (options.baseUrl + options.uri) instead of just the path --
-  # Node's `path` option should never contain a scheme/host when `hostname` is
-  # also set separately (which it is). This alone did NOT fix the redirect
-  # seen against a real sandbox (confirmed: rebuilt, byte offsets in the
-  # resulting error shifted as expected, so the new code was running -- but
-  # GET /threads still came back redirected). Kept anyway since it's still a
-  # real correctness bug, just not the full story.
-  sed -i.bak 's|path: options\.baseUrl + options\.uri,|path: new URL(options.baseUrl).pathname + options.uri,|' "$PROPHET_DIR/src/Connection.ts"
+  # Patch 1: Connection.ts builds the HTTP request's `path` option as
+  # `options.baseUrl + options.uri` -- two bugs stacked here, both confirmed
+  # against a real sandbox:
+  #   (a) baseUrl is a full absolute URL (scheme+host+path), which should
+  #       never go into Node's `path` option when `hostname` is also set
+  #       separately (which it is).
+  #   (b) baseUrl ends in '/' and every uri value (e.g. '/threads') starts
+  #       with '/', so naive concatenation produces a double slash
+  #       (".../v2_0//threads"). A CDN/edge layer in front of the sandbox
+  #       redirects that with an HTTP 301 to the normalized single-slash
+  #       path -- confirmed directly: the redirect's Location header came
+  #       back as the exact same path with one slash instead of two.
+  #       Fixing only (a) still left (b) in place and everything kept
+  #       redirecting; both must be fixed together.
+  sed -i.bak "s|path: options\.baseUrl + options\.uri,|path: (new URL(options.baseUrl).pathname + options.uri).replace(/\\\\/\\\\//g, '/'),|" "$PROPHET_DIR/src/Connection.ts"
 
   # Patch 2: httpRequest() silently treats any non-4xx/5xx response as success,
   # including 3xx redirects -- so a redirect's HTML stub body gets handed to

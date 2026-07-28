@@ -175,17 +175,17 @@ Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neith
 **SFCC/Demandware debugging** (`dap.adapters.prophet` in `dap.lua`): attaches to a sandbox the same way the "Prophet Debugger" VS Code extension does — same debug adapter binary, in fact (built from [SqrTT/prophet](https://github.com/SqrTT/prophet); `install.sh` builds it into `~/.local/share/prophet-debugger`, since there's no published binary or npm package for it). Reads `dw.json` for sandbox credentials (same file `nvim_dw_sync` uses) and auto-detects cartridge folders (any directory containing a `.project` file with the SFCC marker string), so no extra per-project setup is needed beyond a valid `dw.json`.
 
 Verified against a real sandbox:
-- ✅ The adapter builds successfully from source (two patches applied during the build, see below)
+- ✅ The adapter builds successfully from source (patches applied during the build, see below)
 - ✅ Confirmed it's a genuine, protocol-compliant DAP server (sent it a raw `initialize` request directly, got a correct response back) — not something VS Code-specific
 - ✅ The full config/cartridge-discovery handshake (`prophet.getdebugger.config` → `DebuggerConfig` custom request) works end-to-end, both against synthetic test data and a live sandbox — connects successfully, "waiting for breakpoint hit..." confirmed
-- ❌ **Breakpoint-hit detection is still broken as of the last real test** — see the status below, this is actively being debugged
+- ✅ **Root cause of the breakpoint-hit-detection failure found and fixed** — see below. Not yet re-verified against a live sandbox.
 - ⚠️ **Your `dw.json` files need to be strictly valid JSON**: if you've left old sandbox configs commented out (`// {...}`) after the active block, that breaks any strict JSON parser (this one, and the real Prophet extension too) — remove trailing commented blocks.
 
-**Breakpoint-hit detection — status (`install.sh`'s build step patches both of these, see comments there for the exact diffs):**
-1. **Patch 1** (real bug, but not the full story): the adapter's HTTP client passed a full absolute URL into Node's `path` request option instead of just the path portion. Applied and rebuilt — confirmed via shifted byte offsets in the error output that the new code was actually running — but `GET /threads` (the poll that detects a hit breakpoint) still came back as an HTTP redirect afterward. So this was a real bug, just not what's actually causing the failure.
-2. **Patch 2** (diagnostic, not yet tested): `httpRequest()` silently treated any 3xx response as a success, feeding the redirect's HTML stub straight into `JSON.parse()` instead of surfacing it as a redirect. Patched to reject loudly with the actual `Location` header value instead of a generic stub, so the next real sandbox test will show exactly where it's being redirected to (previously only the generic "Moved Permanently" body text was visible, not the true destination) — that's the key missing piece for finding the actual root cause.
+**Root cause, found via `nvim-dap`'s TRACE logging + a diagnostic patch that surfaced the actual redirect `Location` header against a real sandbox:** `Connection.ts` builds the HTTP request's `path` as `options.baseUrl + options.uri`. Two bugs were stacked here:
+1. `baseUrl` is a full absolute URL (scheme+host+path) — Node's `path` option should never contain that when `hostname` is also set separately (it is). Fixing only this didn't resolve the real failure (confirmed: rebuilt, byte offsets in the error shifted as expected showing the new code ran, but the redirect persisted).
+2. `baseUrl` ends in `/` and every `uri` value (e.g. `/threads`) starts with `/`, so concatenation produces a double slash (`.../v2_0//threads`). The redirect's actual `Location` header, captured directly from a real sandbox response, confirmed this exactly: it pointed to the identical path with a single slash instead of two — a CDN/edge layer normalizing the malformed path.
 
-Next step: rebuild with these patches, reproduce against the real sandbox, and read the new error message for the actual redirect target.
+Both are now fixed together (`install.sh`'s build step, see the comment there for the exact patch) — verified the patched build compiles, and the compiled bundle contains the corrected logic (`(new URL(baseUrl).pathname + uri).replace(/\/\//g, '/')`) and still responds correctly to a raw DAP handshake. **The actual live-sandbox breakpoint-hit test is still pending.**
 
 ## Tmux setup
 
