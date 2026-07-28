@@ -84,6 +84,7 @@ return {
     { '<leader>b', function() require('dap').toggle_breakpoint() end, desc = 'Debug: Toggle Breakpoint' },
     { '<leader>B', function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, desc = 'Debug: Set Breakpoint' },
     { '<F7>', function() require('dapui').toggle() end, desc = 'Debug: See last session result' },
+    { '<F8>', function() require('dap').terminate() end, desc = 'Debug: Terminate session' },
   },
   config = function()
     local dap = require 'dap'
