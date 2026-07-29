@@ -20,9 +20,13 @@ Cartridges are detected the same way everywhere in this config (dw-sync, format-
 
 `lua/custom/plugins/dw-sync.lua` wires up `nvim_dw_sync`, a Telescope-based cartridge upload picker. `<leader>ds` opens it (see [neovim.md](neovim.md)'s keymap table).
 
-Two known upstream bugs (documented in the comment in that file, not something fixable from the config side):
-- "Clean Project" and "Upload All" can be flaky — if it misbehaves, prefer running "Clean Project" and "Upload Cartridges" as separate steps instead.
-- The cartridge list only populates once per session — after adding a new cartridge to a project, re-run "Upload Cartridges" to pick it up.
+**"Upload Cartridges" / "Clean Project and Upload all" uses a patched upload, not the upstream one.** The upstream implementation PUTs every file individually over WebDAV with no `MKCOL` calls to create intermediate directories first — any file inside a directory that doesn't already exist on the sandbox fails with an HTTP 409, so upload only "sometimes" worked depending on whether the remote directory structure already happened to match (this is almost certainly what the plugin's own README means by "Clean Project and Upload All not working properly sometimes").
+
+`dw-sync.lua` replaces `upload_cartridge` at runtime (monkey-patches the function on `nvim_dw_sync`'s own module table after it loads, so it survives plugin updates) with the same approach the real "Prophet Debugger" VS Code extension uses for its own cartridge upload (`src/server/WebDav.ts`'s `uploadCartridge`, same [SqrTT/prophet](https://github.com/SqrTT/prophet) repo the SFCC debugger is built from — see [debugging.md](debugging.md)): zip the cartridge locally → PUT the zip → `DELETE` the existing remote cartridge folder (clean slate) → `POST method=UNZIP` (SFCC's WebDAV server-side unzip extension — the same one Prophet and SFCC's own official tooling use) → delete the remote zip. One HTTP round-trip per cartridge instead of one per file, and no missing-directory 409s, since the whole tree is created atomically by the server-side unzip. `node_modules`, `.git`, and stray `.zip` files are excluded from the zip.
+
+Verified against a local mock WebDAV server before shipping (no real sandbox available in that environment): confirmed the exact request sequence, and specifically confirmed a brand-new, deeply nested folder — the case that fails with the old file-by-file approach — is correctly created.
+
+One known upstream bug remains, unrelated to the above (not something fixable from the config side): the cartridge list only populates once per session — after adding a new cartridge to a project, re-run "Upload Cartridges" to pick it up.
 
 ## Format-on-save is disabled in SFCC projects
 
