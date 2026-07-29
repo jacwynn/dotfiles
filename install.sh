@@ -110,6 +110,7 @@ echo "== Symlinking configs =="
 link "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
+link "$DOTFILES_DIR/.aerospace.toml" "$HOME/.aerospace.toml"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo
@@ -169,6 +170,18 @@ if ! brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1; then
   brew install --cask font-jetbrains-mono-nerd-font
 else
   echo "ok:      JetBrains Mono Nerd Font already installed"
+fi
+
+echo
+echo "== AeroSpace (tiling window manager) =="
+# Not in homebrew-cask itself -- lives in the author's own tap.
+if brew list --cask nikitabobko/tap/aerospace >/dev/null 2>&1; then
+  echo "ok:      aerospace already installed"
+else
+  brew tap nikitabobko/tap
+  brew install --cask nikitabobko/tap/aerospace
+  echo "AeroSpace needs Accessibility permission to manage windows -- macOS will prompt for"
+  echo "this the first time you launch it (System Settings > Privacy & Security > Accessibility)."
 fi
 
 echo

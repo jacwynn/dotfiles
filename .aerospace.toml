@@ -1,0 +1,65 @@
+# AeroSpace tiling window manager -- https://github.com/nikitabobko/AeroSpace
+#
+# Operates one level above tmux: this tiles/manages whole macOS app windows
+# (terminal, browser, etc), while tmux keeps handling panes *within* the
+# terminal window. No overlap, so no keybinding conflicts by design -- this
+# file deliberately sticks to Alt-based bindings, leaving tmux's Ctrl-based
+# prefix (C-s) and vim-tmux-navigator's Ctrl-hjkl pane/split navigation alone.
+#
+# Left off at login for now -- flip to true once you're happy with the
+# keybindings below and want it running automatically every session.
+start-at-login = false
+
+# Mostly cosmetic: small gaps between tiled windows so borders are easier to
+# see. Set to 0 if you'd rather windows touch edge-to-edge.
+[gaps]
+inner.horizontal = 8
+inner.vertical = 8
+outer.left = 8
+outer.bottom = 8
+outer.top = 8
+outer.right = 8
+
+[mode.main.binding]
+# Focus a window in a direction -- the AeroSpace-level equivalent of
+# vim-tmux-navigator's Ctrl-hjkl, but Alt-based so it operates on whole
+# windows/apps instead of tmux panes or nvim splits.
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+# Move the focused window itself in a direction
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+
+# Switch to workspace N (1-9) / send the focused window to workspace N
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-shift-1 = 'move-node-to-workspace 1'
+alt-shift-2 = 'move-node-to-workspace 2'
+alt-shift-3 = 'move-node-to-workspace 3'
+alt-shift-4 = 'move-node-to-workspace 4'
+alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-6 = 'move-node-to-workspace 6'
+alt-shift-7 = 'move-node-to-workspace 7'
+alt-shift-8 = 'move-node-to-workspace 8'
+alt-shift-9 = 'move-node-to-workspace 9'
+
+# Layout controls
+alt-slash = 'layout tiles horizontal vertical' # toggle between horizontal/vertical tiling
+alt-comma = 'layout accordion'                 # stack windows accordion-style instead
+alt-enter = 'fullscreen'                       # toggle fullscreen for the focused window
+alt-shift-space = 'layout floating tiling'     # toggle floating for the focused window
+
+# Reload this config after editing it, without restarting AeroSpace
+alt-shift-r = 'reload-config'
