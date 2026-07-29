@@ -125,4 +125,5 @@ Prefix is `C-space`.
 | `Alt-,` | Accordion layout |
 | `Alt-1`..`9` | Switch to workspace 1-9 |
 | `Alt-Shift-1`..`9` | Send focused window to workspace 1-9 |
+| `Alt-c` / `Alt-b` | Switch to workspace C (Ghostty) / B (Chrome), auto-assigned on window open |
 | `Alt-Shift-r` | Reload `~/.aerospace.toml` |
