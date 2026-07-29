@@ -201,6 +201,13 @@ vim.keymap.set('i', 'jk', '<Esc>')
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
+-- Re-select the visual selection after shifting its indent, so `<`/`>` can be
+-- tapped repeatedly to indent/outdent multiple times in a row (vim's default
+-- drops back to normal mode and deselects after a single shift, unlike
+-- VS Code's Cmd+[/Cmd+], which is the behavior this mimics).
+vim.keymap.set('v', '<', '<gv', { desc = 'Outdent selection and reselect' })
+vim.keymap.set('v', '>', '>gv', { desc = 'Indent selection and reselect' })
+
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -712,6 +719,16 @@ require('lazy').setup({
         html = {},
         cssls = {},
         jsonls = {},
+
+        -- Emmet-style abbreviation expansion (e.g. type `p` and expand into
+        -- `<p></p>`) surfaced as ordinary completion items in blink.cmp's
+        -- popup -- accept with <C-y> like any other suggestion, no separate
+        -- plugin/keybinding needed. `emmet_language_server` (olrtg) is the
+        -- actively maintained option; nvim-lspconfig also bundles the older
+        -- `emmet_ls` (aca), which is unmaintained. Its default filetypes
+        -- already include `html`, which covers .isml (mapped to html in
+        -- custom/filetype.lua).
+        emmet_language_server = {},
 
         stylua = {}, -- Used to format Lua code
 
