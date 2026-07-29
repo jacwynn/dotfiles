@@ -26,11 +26,11 @@ Not in default `homebrew-cask` — it lives in the author's own tap (`nikitabobk
 | `Alt-1` … `Alt-9` | Switch to workspace 1-9 |
 | `Alt-Shift-1` … `Alt-Shift-9` | Send the focused window to workspace 1-9 |
 | `Alt-c` | Switch to workspace `C` (Ghostty) |
-| `Alt-b` | Switch to workspace `B` (Chrome) |
+| `Alt-x` | Switch to workspace `X` (Chrome) |
 
-`Alt-c`/`Alt-b` are paired with `[[on-window-detected]]` rules (matched by `app-id`) that auto-move Ghostty/Chrome to their named workspace the moment either opens a new window — so the keys land on the right app even before it's running yet, not just once it's already there.
+`Alt-c`/`Alt-x` are paired with `[[on-window-detected]]` rules (matched by `app-id`) that auto-move Ghostty/Chrome to their named workspace the moment either opens a new window — so the keys land on the right app even before it's running yet, not just once it's already there.
 
-**Caveat:** the auto-move rule fires per new window, not continuously — an existing window already sitting in another workspace (e.g. a browser window placed side-by-side with another app in workspace 2) is left alone. But a *new* Chrome window (`Cmd-N`, "open in new window", etc.) gets pulled into workspace `B` regardless of intent, since the rule can't distinguish "a new testing window I want to keep next to something else" from any other new Chrome window. If that happens and you wanted it elsewhere, `Alt-Shift-<workspace number>` immediately sends the focused window back to where you actually wanted it. Using a new *tab* instead of a new *window* sidesteps the rule entirely, if that works for what you're doing.
+**Caveat:** the auto-move rule fires per new window, not continuously — an existing window already sitting in another workspace (e.g. a browser window placed side-by-side with another app in workspace 2) is left alone. But a *new* Chrome window (`Cmd-N`, "open in new window", etc.) gets pulled into workspace `X` regardless of intent, since the rule can't distinguish "a new testing window I want to keep next to something else" from any other new Chrome window. If that happens and you wanted it elsewhere, `Alt-Shift-<workspace number>` immediately sends the focused window back to where you actually wanted it. Using a new *tab* instead of a new *window* sidesteps the rule entirely, if that works for what you're doing.
 
 **Config**
 | Key | Action |

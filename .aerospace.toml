@@ -55,13 +55,13 @@ alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
 
-# Named workspaces for specific apps, jumped to directly by mnemonic letter
-# instead of a number. Paired with the [[on-window-detected]] rules below,
-# which auto-move each app there as soon as it launches -- so Alt-c/Alt-b
-# both switch to that workspace *and* keep landing on the right app even if
-# it isn't running yet.
+# Named workspaces for specific apps, jumped to directly by a letter instead
+# of a number. Paired with the [[on-window-detected]] rules below, which
+# auto-move each app there as soon as it launches -- so Alt-c/Alt-x both
+# switch to that workspace *and* keep landing on the right app even if it
+# isn't running yet.
 alt-c = 'workspace C' # C for terminal (Ghostty)
-alt-b = 'workspace B' # B for browser (Chrome)
+alt-x = 'workspace X' # browser (Chrome)
 
 # Layout controls
 alt-slash = 'layout tiles horizontal vertical' # toggle between horizontal/vertical tiling
@@ -72,7 +72,7 @@ alt-shift-space = 'layout floating tiling'     # toggle floating for the focused
 # Reload this config after editing it, without restarting AeroSpace
 alt-shift-r = 'reload-config'
 
-# Auto-assign apps to their named workspace (see alt-c/alt-b above) as soon
+# Auto-assign apps to their named workspace (see alt-c/alt-x above) as soon
 # as a window is detected, regardless of which workspace was active when it
 # launched.
 [[on-window-detected]]
@@ -81,4 +81,4 @@ run = 'move-node-to-workspace C'
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-run = 'move-node-to-workspace B'
+run = 'move-node-to-workspace X'
