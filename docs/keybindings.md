@@ -90,27 +90,27 @@ Leader is `<space>`.
 
 ## Tmux — [tmux.md](tmux.md)
 
-Prefix is `C-s`.
+Prefix is `C-space`.
 
 | Key | Action |
 |---|---|
-| `C-s c` | New window |
-| `C-s n` | Next window |
-| `C-s w` | Interactive list of all windows |
-| `C-s <number>` | Jump to window N |
-| `C-s ,` | Rename current window |
-| `C-s &` | Kill current window |
-| `C-s C-s` | Jump to last active window |
-| `C-s \|` | Split pane vertically |
-| `C-s -` | Split pane horizontally |
+| `C-space c` | New window |
+| `C-space n` | Next window |
+| `C-space w` | Interactive list of all windows |
+| `C-space <number>` | Jump to window N |
+| `C-space ,` | Rename current window |
+| `C-space &` | Kill current window |
+| `C-space C-space` | Jump to last active window |
+| `C-space \|` | Split pane vertically |
+| `C-space -` | Split pane horizontally |
 | `C-h/j/k/l` | Move between panes (no prefix) |
-| `C-s h/j/k/l` | Resize active pane |
-| `C-s m` | Toggle pane zoom |
-| `C-s x` | Kill current pane |
-| `C-s [` | Enter copy mode |
+| `C-space h/j/k/l` | Resize active pane |
+| `C-space m` | Toggle pane zoom |
+| `C-space x` | Kill current pane |
+| `C-space [` | Enter copy mode |
 | `v` / `y` (copy mode) | Begin selection / copy selection |
-| `C-s p` | Paste buffer |
-| `C-s r` | Reload `~/.tmux.conf` |
+| `C-space p` | Paste buffer |
+| `C-space r` | Reload `~/.tmux.conf` |
 | `C-k` | Clear scrollback history |
 
 ## AeroSpace — [aerospace.md](aerospace.md)
