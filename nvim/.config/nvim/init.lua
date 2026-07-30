@@ -164,6 +164,16 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Fold based on actual code structure (via treesitter) instead of the
+-- default foldmethod=manual, which requires manually defining every fold
+-- yourself and is unusable for the usual "collapse this function" workflow.
+-- vim.treesitter.foldexpr() is built into Neovim core (0.10+), not the
+-- nvim-treesitter plugin, so it isn't affected by that plugin's own
+-- classic-vs-new API split (see the treesitter setup below).
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldlevelstart = 99 -- files open fully expanded, not collapsed
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 

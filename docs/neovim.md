@@ -19,6 +19,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - `lua/custom/plugins/dap.lua`: `nvim-dap` + `nvim-dap-ui` — debugging (VS Code launch.json equivalent), including a custom SFCC/Demandware adapter. See [debugging.md](debugging.md).
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
 - Visual mode `<`/`>` reselect the selection after shifting indent (`<gv`/`>gv`), so either can be tapped repeatedly to indent/outdent multiple levels in one go — closer to VS Code's Cmd+[/Cmd+] than vim's default (which drops back to normal mode and deselects after a single shift)
+- Code folding: `foldmethod=expr` + `vim.treesitter.foldexpr()` (built into Neovim core, not the nvim-treesitter plugin, so unaffected by that plugin's classic-vs-new API split above) instead of the useless default `foldmethod=manual`. `foldlevelstart=99` so files open fully expanded. See [Folding](#folding) below.
 
 ## Known quirks
 
@@ -119,3 +120,16 @@ Mark a small working set of files (e.g. everything touched while building one fe
 | `<leader>1` .. `7` | Jump straight to marked file 1–7 |
 
 Harpoon's own README suggests `<C-h>` and `<C-s>` for jumping to marks — neither works here: `<C-h>` is already `vim-tmux-navigator`'s move-left, and `<C-s>` is the tmux prefix key, so tmux swallows it before nvim ever sees it. Using `<leader>1-7` instead sidesteps both.
+
+## Folding
+
+Folds are based on actual code structure (functions, blocks, tags — via `vim.treesitter.foldexpr()`), not indentation guessing. Files open fully expanded (`foldlevelstart=99`); all standard vim fold commands work, no extra plugin or keymap needed:
+
+| Key | Action |
+|---|---|
+| `za` | Toggle the fold under the cursor |
+| `zc` / `zo` | Close / open the fold under the cursor |
+| `zM` | Close all folds — good for seeing a file's high-level shape |
+| `zR` | Open all folds |
+| `zj` / `zk` | Jump to the next / previous fold |
+| `zA` | Toggle recursively (fold + everything nested inside it) |

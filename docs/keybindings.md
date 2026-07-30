@@ -76,6 +76,15 @@ Leader is `<space>`.
 | `<C-e>` | Toggle the quick-menu |
 | `<leader>1` .. `7` | Jump straight to marked file 1–7 |
 
+**Folding**
+| Key | Action |
+|---|---|
+| `za` | Toggle fold under cursor |
+| `zc` / `zo` | Close / open fold under cursor |
+| `zM` / `zR` | Close all folds / open all folds |
+| `zj` / `zk` | Jump to next / previous fold |
+| `zA` | Toggle recursively |
+
 **Debugging** — see [debugging.md](debugging.md)
 | Key | Action |
 |---|---|
