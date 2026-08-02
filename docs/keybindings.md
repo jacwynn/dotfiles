@@ -48,6 +48,7 @@ Leader is `<space>`.
 **Git (gitsigns)**
 | Key | Action |
 |---|---|
+| `<leader>gs` | Telescope git status — all changed files, live diff preview |
 | `<leader>hb` | Blame current line (full popup) |
 | `<leader>tb` | Toggle inline blame |
 | `<leader>hp` | Preview hunk diff |

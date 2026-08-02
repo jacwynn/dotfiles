@@ -76,6 +76,7 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 **Git (gitsigns)** — like GitLens' inline blame, built in rather than a separate plugin
 | Key | Action |
 |---|---|
+| `<leader>gs` | Telescope git status — every changed file at once, live diff preview (`<C-u>`/`<C-d>` to scroll it) |
 | `<leader>hb` | Blame current line (full popup) |
 | `<leader>tb` | Toggle inline blame (shows on every line, like GitLens) |
 | `<leader>hp` | Preview hunk diff |
