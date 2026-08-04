@@ -16,6 +16,22 @@ Cartridges are detected the same way everywhere in this config (dw-sync, format-
 
 `lua/custom/filetype.lua` maps the `.isml` extension to the `html` filetype, so HTML tooling (the `html` LSP, Emmet, treesitter, etc — see [neovim.md](neovim.md)) works on SFCC templates without any extra configuration.
 
+## ISML tag snippets
+
+Emmet handles plain HTML tags, but ISML tags (`isif`, `isloop`, `isset`, `isprint`, etc) aren't HTML — Emmet has no idea they exist. `lua/custom/snippets/isml/isml.json` adds them as ordinary LuaSnip snippets instead: type a tag name (e.g. `isloop`) and accept it from the `blink.cmp` completion popup like any other suggestion (`<C-y>`), same as Emmet.
+
+Adapted from the "Prophet Debugger" VS Code extension's own `snippets/snippets.json` ([SqrTT/prophet](https://github.com/SqrTT/prophet) — the same repo the SFCC debugger and the `dw-sync` upload fix are built from, see [debugging.md](debugging.md)): all 31 `is*` tag snippets, registered for the `html` filetype (since `.isml` maps there — see above) via `require('luasnip.loaders.from_vscode').lazy_load(...)` in `init.lua`'s LuaSnip config. Two snippets had bugs in the upstream source, fixed here: `iscontent` had an unclosed `${2|true,false|` choice placeholder, and `isredirect` wasn't self-closed. Verified headlessly that all snippets parse and expand into valid ISML markup.
+
+Registering these under `html` rather than a dedicated `isml` filetype means they also show up as completion candidates in plain `.html` files — harmless in practice, since nothing in ordinary HTML starts with `is`.
+
+## ISML syntax highlighting
+
+`after/queries/html/highlights.scm` recolors `is*`-prefixed tag names (`isif`, `isloop`, `isset`, etc) as `@keyword` instead of the generic `@tag` every other HTML element gets, so ISML's own control-flow/directive tags visually stand out from plain markup — same idea as the [ISML tag snippets](#isml-tag-snippets) above, just for highlighting instead of completion, and scoped the same way (registered on `html`, since that's what `.isml` maps to).
+
+This required a `;; extends` modeline as the file's first line. Without it, Neovim treats a query file found later on `'runtimepath'` as a full *replacement* for the base query of the same name, not an addition — so the file silently discarded every other html highlight rule (headings, attributes, tag delimiters, etc) instead of layering on top of them. `;; extends` tells Neovim to merge it in instead. (Caught by writing a headless test that dumped the merged query's capture list before and after adding the modeline — the `@keyword` capture was simply absent without it, and the true fix wasn't "why doesn't my match work" but "why isn't my file being merged at all.")
+
+As a side effect of already-installed HTML tooling: embedded ISML script expressions (`condition="${pdict.foo}"`) get real JavaScript syntax highlighting for free, with no extra config. That specific `${...}` convention is exactly what `nvim-treesitter`'s bundled html injection query already handles (originally written for lit-html's template interpolation syntax, which happens to use the identical `${...}` delimiters) — no work was needed there beyond confirming it via the same headless test.
+
 ## Uploading cartridges (`nvim_dw_sync`)
 
 `lua/custom/plugins/dw-sync.lua` wires up `nvim_dw_sync`, a Telescope-based cartridge upload picker. `<leader>ds` opens it (see [neovim.md](neovim.md)'s keymap table).

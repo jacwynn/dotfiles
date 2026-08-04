@@ -912,7 +912,19 @@ require('lazy').setup({
           --   end,
           -- },
         },
-        opts = {},
+        config = function()
+          require('luasnip').setup {}
+          -- ISML tag snippets (isif, isloop, isset, etc), adapted from the
+          -- "Prophet Debugger" VS Code extension's own snippets/snippets.json
+          -- (SqrTT/prophet -- the same repo the SFCC debugger adapter and
+          -- dw-sync upload fix were built from, see dap.lua/dw-sync.lua).
+          -- Registered under filetype "html" since custom/filetype.lua maps
+          -- .isml files there -- Emmet already lives on the same filetype, so
+          -- this just adds more completion candidates, not a new filetype.
+          require('luasnip.loaders.from_vscode').lazy_load {
+            paths = { vim.fn.stdpath 'config' .. '/lua/custom/snippets/isml' },
+          }
+        end,
       },
     },
     ---@module 'blink.cmp'
