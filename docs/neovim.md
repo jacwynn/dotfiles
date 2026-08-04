@@ -7,6 +7,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - LSP: added `ts_ls`, `html`, `cssls`, `jsonls`, `emmet_language_server` (stock kickstart only ships `lua_ls`). Emmet abbreviations (e.g. type `p`, expand to `<p></p>`) show up as ordinary completion items in the `blink.cmp` popup — accept with `<C-y>` like any other suggestion, no separate plugin/keybinding needed.
 - `lua/custom/snippets/isml/isml.json`: ISML tag snippets (`isif`, `isloop`, `isset`, etc) loaded via LuaSnip's VS Code-format loader — Emmet-style completion for SFCC's own tags, which Emmet doesn't know about. See [sfcc.md](sfcc.md).
 - `after/queries/html/highlights.scm`: recolors ISML tag names (`isif`, `isloop`, etc) as `@keyword` instead of plain `@tag`, so they read as SFCC's own control-flow tags rather than markup. See [sfcc.md](sfcc.md).
+- `lua/custom/isml-expr-highlight.lua`: real JavaScript syntax highlighting for ISML's embedded `${...}` script expressions, wherever they appear (attribute values, mixed with literal text, or standalone page text) — scoped to `.isml` files only. See [sfcc.md](sfcc.md).
 - Formatting: prettier/prettierd wired up for html/css/scss/js/ts/json, format-on-save enabled for those plus lua — except inside SFCC/Demandware projects, where it's skipped entirely (see [sfcc.md](sfcc.md)). Manual `<leader>f` still works there.
 - Treesitter: added css/scss/javascript/typescript/tsx/json parsers
 - Enabled kickstart's optional `nvim-autopairs` (auto-closes `()`, `""`, `''`, etc as you type)

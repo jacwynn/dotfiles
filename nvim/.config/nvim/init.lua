@@ -292,6 +292,9 @@ require 'custom.filetype'
 -- Disable editorconfig's trim_trailing_whitespace inside SFCC projects
 require 'custom.sfcc-editorconfig'
 
+-- Real JS syntax highlighting for ISML's embedded ${...} script expressions
+require 'custom.isml-expr-highlight'
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
