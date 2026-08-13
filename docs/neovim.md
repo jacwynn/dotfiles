@@ -20,7 +20,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - `lua/custom/plugins/dw-sync.lua`: `nvim_dw_sync` — Telescope-based cartridge upload for Demandware (see [sfcc.md](sfcc.md))
 - `lua/custom/plugins/harpoon.lua`: `harpoon` (harpoon2 branch) — mark a small working set of files and jump straight to them, instead of cycling through buffers. See [Harpoon](#harpoon) below.
 - `lua/custom/plugins/dap.lua`: `nvim-dap` + `nvim-dap-ui` — debugging (VS Code launch.json equivalent), including a custom SFCC/Demandware adapter. See [debugging.md](debugging.md).
-- `lua/custom/plugins/toggleterm.lua`: `toggleterm.nvim` — `<leader>tt` toggles a floating terminal for one-off shell commands (`git pull`, running a dev server, `lazygit`, etc) without leaving Neovim. It's persistent: toggling it away and back keeps scrollback and any running process.
+- `lua/custom/plugins/toggleterm.lua`: `toggleterm.nvim` — `<leader>tt` toggles a floating terminal for one-off shell commands (`git pull`, running a dev server, `lazygit`, etc) without leaving Neovim. It's persistent: toggling it away and back keeps scrollback and any running process. Prefix with a count for additional independent terminals (`2<leader>tt`) — each keeps its own buffer/scrollback/process, though with a floating layout only one is ever visible on screen at once (switching to another just hides the previous one's window, it doesn't kill it).
 - Two personal keymaps: `;` → `:`, `jk` → `<Esc>` (insert mode)
 - Visual mode `<`/`>` reselect the selection after shifting indent (`<gv`/`>gv`), so either can be tapped repeatedly to indent/outdent multiple levels in one go — closer to VS Code's Cmd+[/Cmd+] than vim's default (which drops back to normal mode and deselects after a single shift)
 - Code folding: `foldmethod=expr` + `vim.treesitter.foldexpr()` (built into Neovim core, not the nvim-treesitter plugin, so unaffected by that plugin's classic-vs-new API split above) instead of the useless default `foldmethod=manual`. `foldlevelstart=99` so files open fully expanded. See [Folding](#folding) below.
@@ -101,7 +101,7 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `<leader>q` | Diagnostics to quickfix |
 | `<Esc>` | Clear search highlight |
 | `<leader>ds` | SFCC: DW Sync picker (upload cartridges) — see [sfcc.md](sfcc.md) |
-| `<leader>tt` | Toggle floating terminal (persistent — keeps scrollback/running process) |
+| `<leader>tt` | Toggle floating terminal — prefix with a count for another (`2<leader>tt`) |
 
 **Commands (typed, not keymaps)**
 | Command | Use |
