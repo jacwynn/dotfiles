@@ -1087,7 +1087,8 @@ require('lazy').setup({
       -- H.default_content_active in mini/statusline.lua) but drops the
       -- diagnostics section -- E/W/I/H counts weren't something worth
       -- glancing at in the statusline; `<leader>sd` (Telescope diagnostics)
-      -- covers actually wanting to look at them.
+      -- covers actually wanting to look at them -- and the LSP section,
+      -- not needed here either.
       statusline.setup {
         use_icons = vim.g.have_nerd_font,
         content = {
@@ -1095,7 +1096,6 @@ require('lazy').setup({
             local mode, mode_hl = statusline.section_mode { trunc_width = 120 }
             local git = statusline.section_git { trunc_width = 40 }
             local diff = statusline.section_diff { trunc_width = 75 }
-            local lsp = statusline.section_lsp { trunc_width = 75 }
             local filename = statusline.section_filename { trunc_width = 140 }
             local fileinfo = statusline.section_fileinfo { trunc_width = 120 }
             local location = statusline.section_location { trunc_width = 75 }
@@ -1103,7 +1103,7 @@ require('lazy').setup({
 
             return statusline.combine_groups {
               { hl = mode_hl, strings = { mode } },
-              { hl = 'MiniStatuslineDevinfo', strings = { git, diff, lsp } },
+              { hl = 'MiniStatuslineDevinfo', strings = { git, diff } },
               '%<',
               { hl = 'MiniStatuslineFilename', strings = { filename } },
               '%=',
@@ -1119,20 +1119,6 @@ require('lazy').setup({
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function() return '%2l:%-2v' end
-
-      -- LSP: show the actual attached client name(s) instead of one
-      -- anonymous "+" per server -- "LSP +" told you a server was attached
-      -- but not which one; "LSP: ts_ls" actually answers that.
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_lsp = function(args)
-        if statusline.is_truncated(args.trunc_width) then return '' end
-        local names = {}
-        for _, client in ipairs(vim.lsp.get_clients { bufnr = 0 }) do
-          table.insert(names, client.name)
-        end
-        if #names == 0 then return '' end
-        return 'LSP: ' .. table.concat(names, ', ')
-      end
 
       -- Diff: hide the section entirely when there's nothing to show,
       -- instead of a bare "-" that reads like a typo rather than "no
