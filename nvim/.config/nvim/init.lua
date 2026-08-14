@@ -1095,12 +1095,36 @@ require('lazy').setup({
       -- (the default -- see docs/neovim.md's "Unsaved changes" section).
       local diag_error_fg = vim.api.nvim_get_hl(0, { name = 'DiagnosticError' }).fg
       vim.api.nvim_set_hl(0, 'MiniStatuslineModified', { fg = diag_error_fg, bold = true })
+
+      -- Filename first, dimmed (shortened) directory second -- same
+      -- "filename first" idea as Telescope's path_display = filename_first,
+      -- so a deep cartridge path (cartridges/app_x/cartridge/client/.../foo.js)
+      -- never buries the filename. Deliberately NOT using the default '%f'/
+      -- '%F' + the statusline's own overflow truncation for this: that
+      -- truncates from the *left* of whatever comes right after mini's '%<'
+      -- marker, so with a long path it eats into the filename first (see
+      -- docs/neovim.md). pathshorten() keeps the directory itself short
+      -- (every segment but the last collapsed to one letter) so it almost
+      -- never needs truncating at all, and on genuinely narrow windows the
+      -- directory is dropped outright rather than letting '%<' pick what
+      -- to cut.
+      vim.api.nvim_set_hl(0, 'MiniStatuslineFilenameDir', { link = 'Comment' })
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_filename = function(args)
         if vim.bo.buftype == 'terminal' then return '%t' end
-        local base = statusline.is_truncated(args.trunc_width) and '%f' or '%F'
+
+        local filename = vim.fn.expand '%:t'
+        if filename == '' then filename = '[No Name]' end
         local modified = vim.bo.modified and '%#MiniStatuslineModified#[+]%#MiniStatuslineFilename#' or ''
-        return base .. modified .. '%r'
+
+        if statusline.is_truncated(args.trunc_width) then return filename .. modified .. '%r' end
+
+        local dir = vim.fn.expand '%:.:h'
+        local dir_part = ''
+        if dir ~= '' and dir ~= '.' then
+          dir_part = '  %#MiniStatuslineFilenameDir#' .. vim.fn.pathshorten(dir) .. '%#MiniStatuslineFilename#'
+        end
+        return filename .. modified .. '%r' .. dir_part
       end
 
       -- ... and there is more!
