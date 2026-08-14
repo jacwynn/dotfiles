@@ -1053,6 +1053,18 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- File explorer -- a floating dual-pane tree you navigate and edit like
+      -- a normal buffer (rename a line to rename the file, dd to delete, :w
+      -- to apply). <leader>e opens it at the current file's directory, with
+      -- that file pre-selected; from an unnamed/non-file buffer it falls back
+      -- to cwd. Replaces netrw's :Ex/:Explore as the everyday file browser.
+      require('mini.files').setup()
+      vim.keymap.set('n', '<leader>e', function()
+        local path = vim.api.nvim_buf_get_name(0)
+        if path == '' or vim.fn.filereadable(path) == 0 then path = vim.fn.getcwd() end
+        require('mini.files').open(path, false)
+      end, { desc = '[E]xplore files' })
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin

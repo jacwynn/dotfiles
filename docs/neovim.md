@@ -5,6 +5,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 ## Customizations on top of stock kickstart
 
 - LSP: added `ts_ls`, `html`, `cssls`, `jsonls`, `emmet_language_server` (stock kickstart only ships `lua_ls`). Emmet abbreviations (e.g. type `p`, expand to `<p></p>`) show up as ordinary completion items in the `blink.cmp` popup — accept with `<C-y>` like any other suggestion, no separate plugin/keybinding needed.
+- `mini.files` (from the already-installed `mini.nvim`, so no new plugin): `<leader>e` opens a floating file explorer at the current file's directory, with that file pre-selected — falls back to cwd from an unnamed/non-file buffer. It's a normal editable buffer: rename a line to rename the file, `dd` to delete, `:w` to apply the changes. Replaces netrw's `:Ex`/`:Explore` as the everyday file browser (netrw itself is untouched, still there if you want it).
 - `lua/custom/snippets/isml/isml.json`: ISML tag snippets (`isif`, `isloop`, `isset`, etc) loaded via LuaSnip's VS Code-format loader — Emmet-style completion for SFCC's own tags, which Emmet doesn't know about. See [sfcc.md](sfcc.md).
 - `after/queries/html/highlights.scm`: recolors ISML tag names (`isif`, `isloop`, etc) as `@keyword` instead of plain `@tag`, so they read as SFCC's own control-flow tags rather than markup. See [sfcc.md](sfcc.md).
 - `lua/custom/isml-expr-highlight.lua`: real JavaScript syntax highlighting for ISML's embedded `${...}` script expressions, wherever they appear (attribute values, mixed with literal text, or standalone page text) — scoped to `.isml` files only. See [sfcc.md](sfcc.md).
@@ -45,6 +46,7 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `<leader>sw` | Grep word under cursor |
 | `<leader><leader>` | Switch buffers |
 | `<leader>/` | Fuzzy search current buffer |
+| `<leader>e` | File explorer (mini.files) at the current file's location |
 | `<leader>s.` | Recent files |
 | `<leader>sd` | Search diagnostics |
 | `<leader>sh` | Search help |
@@ -111,7 +113,7 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `:checkhealth` | Diagnose setup problems |
 | `:LspInfo` | LSP attached to current buffer |
 | `:e path/to/file` | Create/open a new file |
-| `:Explore` (or `:Ex`) | Open netrw file explorer in the current buffer's directory — `%` creates a file, `d` creates a directory |
+| `:Explore` (or `:Ex`) | Open netrw's file explorer — still available, but `<leader>e` (mini.files) is the everyday one now, see below |
 
 If you forget everything else: hit `<leader>` and wait — `which-key` shows every available keybind live from wherever your cursor is.
 
