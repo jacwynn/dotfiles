@@ -15,7 +15,11 @@ return {
       -- Match the have_nerd_font pattern used elsewhere in this config --
       -- these icons are nerd-font glyphs, unrenderable without one.
       icons = { enabled = vim.g.have_nerd_font },
-      highlight = true,
+      -- Highlighting off: lua/custom/winbar.lua wraps the whole breadcrumb
+      -- in its own solid-color powerline segment (matching the tmux status
+      -- bar's style), so navic's own per-kind coloring would just fight
+      -- with that single flat background instead of blending into it.
+      highlight = false,
       separator = ' > ',
     }
   end,
