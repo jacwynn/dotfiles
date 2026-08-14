@@ -9,6 +9,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - `lua/custom/snippets/isml/isml.json`: ISML tag snippets (`isif`, `isloop`, `isset`, etc) loaded via LuaSnip's VS Code-format loader — Emmet-style completion for SFCC's own tags, which Emmet doesn't know about. See [sfcc.md](sfcc.md).
 - `after/queries/html/highlights.scm`: recolors ISML tag names (`isif`, `isloop`, etc) as `@keyword` instead of plain `@tag`, so they read as SFCC's own control-flow tags rather than markup. See [sfcc.md](sfcc.md).
 - `lua/custom/isml-expr-highlight.lua`: real JavaScript syntax highlighting for ISML's embedded `${...}` script expressions, wherever they appear (attribute values, mixed with literal text, or standalone page text) — scoped to `.isml` files only. See [sfcc.md](sfcc.md).
+- `lua/custom/isml-comment-highlight.lua`: renders `<iscomment>...</iscomment>` blocks (ISML's own block-comment tag) as real dimmed/italic comments, tags and contents included — scoped to `.isml` files only. See [sfcc.md](sfcc.md).
 - Formatting: prettier/prettierd wired up for html/css/scss/js/ts/json, format-on-save enabled for those plus lua — except inside SFCC/Demandware projects, where it's skipped entirely (see [sfcc.md](sfcc.md)). Manual `<leader>f` still works there.
 - Treesitter: added css/scss/javascript/typescript/tsx/json parsers
 - Enabled kickstart's optional `nvim-autopairs` (auto-closes `()`, `""`, `''`, etc as you type)

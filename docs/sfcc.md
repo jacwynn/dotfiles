@@ -43,6 +43,12 @@ Caught a genuine off-by-one bug in the brace-balancer while verifying this again
 
 As a side effect of already-installed HTML tooling: embedded ISML script expressions (`condition="${pdict.foo}"`) get real JavaScript syntax highlighting for free, with no extra config. That specific `${...}` convention is exactly what `nvim-treesitter`'s bundled html injection query already handles (originally written for lit-html's template interpolation syntax, which happens to use the identical `${...}` delimiters) — no work was needed there beyond confirming it via the same headless test.
 
+### `<iscomment>` blocks
+
+`<iscomment>...</iscomment>` is ISML's own block-comment tag — everything inside is stripped at render time, same idea as SFCC's `<!--- ... --->` HTML-comment convention — but the base html grammar has no idea `iscomment` is special. It highlights the tag name as `@keyword` (via the `is*`-prefix override above) and whatever's inside as ordinary markup/text, same as any other element, which made commented-out code visually indistinguishable from live code.
+
+Same constraint as the `${...}` case: a query can't tell a node "render your entire subtree as `@comment`" once that subtree contains nested tags (real examples in the wild commonly wrap a nested `<isinclude .../>`), so `lua/custom/isml-comment-highlight.lua` scans buffer text directly for `<iscomment>...</iscomment>` spans (single-line, or multi-line blocks wrapping several nested tags) and overlays one `@comment` extmark across the whole thing, tags included. Its priority (250) is set above the `${...}` highlighter's (200), so a commented-out block that happens to contain a `${...}` expression still reads as one uniform comment instead of partially re-lit as JavaScript. Verified headlessly against single-line, single-line-with-nested-tag, and multi-line examples — confirmed the extmark span matches exactly and real (non-commented) content is untouched.
+
 ## Uploading cartridges (`nvim_dw_sync`)
 
 `lua/custom/plugins/dw-sync.lua` wires up `nvim_dw_sync`, a Telescope-based cartridge upload picker. `<leader>ds` opens it (see [neovim.md](neovim.md)'s keymap table).

@@ -295,6 +295,9 @@ require 'custom.sfcc-editorconfig'
 -- Real JS syntax highlighting for ISML's embedded ${...} script expressions
 require 'custom.isml-expr-highlight'
 
+-- Render <iscomment>...</iscomment> blocks as real (dimmed/italic) comments
+require 'custom.isml-comment-highlight'
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
