@@ -1082,13 +1082,70 @@ require('lazy').setup({
       --  and try some other statusline plugin
       local statusline = require 'mini.statusline'
       -- Set `use_icons` to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      --
+      -- content.active mirrors mini.statusline's own default layout (see
+      -- H.default_content_active in mini/statusline.lua) but drops the
+      -- diagnostics section -- E/W/I/H counts weren't something worth
+      -- glancing at in the statusline; `<leader>sd` (Telescope diagnostics)
+      -- covers actually wanting to look at them.
+      statusline.setup {
+        use_icons = vim.g.have_nerd_font,
+        content = {
+          active = function()
+            local mode, mode_hl = statusline.section_mode { trunc_width = 120 }
+            local git = statusline.section_git { trunc_width = 40 }
+            local diff = statusline.section_diff { trunc_width = 75 }
+            local lsp = statusline.section_lsp { trunc_width = 75 }
+            local filename = statusline.section_filename { trunc_width = 140 }
+            local fileinfo = statusline.section_fileinfo { trunc_width = 120 }
+            local location = statusline.section_location { trunc_width = 75 }
+            local search = statusline.section_searchcount { trunc_width = 75 }
+
+            return statusline.combine_groups {
+              { hl = mode_hl, strings = { mode } },
+              { hl = 'MiniStatuslineDevinfo', strings = { git, diff, lsp } },
+              '%<',
+              { hl = 'MiniStatuslineFilename', strings = { filename } },
+              '%=',
+              { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+              { hl = mode_hl, strings = { search, location } },
+            }
+          end,
+        },
+      }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function() return '%2l:%-2v' end
+
+      -- LSP: show the actual attached client name(s) instead of one
+      -- anonymous "+" per server -- "LSP +" told you a server was attached
+      -- but not which one; "LSP: ts_ls" actually answers that.
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_lsp = function(args)
+        if statusline.is_truncated(args.trunc_width) then return '' end
+        local names = {}
+        for _, client in ipairs(vim.lsp.get_clients { bufnr = 0 }) do
+          table.insert(names, client.name)
+        end
+        if #names == 0 then return '' end
+        return 'LSP: ' .. table.concat(names, ', ')
+      end
+
+      -- Diff: hide the section entirely when there's nothing to show,
+      -- instead of a bare "-" that reads like a typo rather than "no
+      -- changes". Still shows the normal +added ~changed -deleted summary
+      -- once there actually is a diff.
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_diff = function(args)
+        if statusline.is_truncated(args.trunc_width) then return '' end
+        local summary = vim.b.minidiff_summary_string or vim.b.gitsigns_status
+        if summary == nil or summary == '' then return '' end
+        local icon = (vim.g.have_nerd_font and '' or 'Diff')
+        return icon .. ' ' .. summary
+      end
 
       -- Recolor the modified ([+]) flag so an unsaved buffer is easy to
       -- notice at a glance, instead of blending into the filename's color
