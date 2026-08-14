@@ -513,6 +513,12 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+        defaults = {
+          -- Show the filename first, directory second (dimmed) -- on a long
+          -- path, truncation then eats into the directory instead of the
+          -- filename, which is the part actually worth keeping visible.
+          path_display = { 'filename_first' },
+        },
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
         },
