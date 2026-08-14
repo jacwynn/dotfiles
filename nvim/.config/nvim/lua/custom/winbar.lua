@@ -1,9 +1,12 @@
--- Winbar: filename, plus a bold "unsaved" marker when the buffer has
--- changes -- so it's impossible to miss even glancing at the top of the
--- window. Complements the recolored [+] flag in mini.statusline (see
--- init.lua's mini.nvim config): the statusline flag is easy to overlook in
--- peripheral vision since it's off to the side; this sits right above the
--- code you're looking at.
+-- Winbar: LSP breadcrumbs for the cursor's current context (nvim-navic --
+-- see lua/custom/plugins/navic.lua), e.g. "MyClass > myMethod", plus a bold
+-- "unsaved" marker when the buffer has changes -- so an unsaved file is
+-- impossible to miss even glancing at the top of the window. Complements
+-- the recolored [+] flag in mini.statusline (see init.lua's mini.nvim
+-- config): the statusline flag is easy to overlook in peripheral vision
+-- since it's off to the side; this sits right above the code you're
+-- looking at. The filename itself isn't repeated here -- mini.statusline
+-- already shows it filename-first, so it'd just be noise.
 --
 -- Only shown for normal, listed file buffers -- skipped for terminals,
 -- pickers, the mini.files explorer, etc (anything with a non-empty
@@ -25,10 +28,16 @@ vim.schedule(set_modified_hl)
 
 _G.dotfiles_winbar_status = function()
   if vim.bo.buftype ~= '' or not vim.bo.buflisted then return '' end
-  local name = vim.fn.expand '%:t'
-  if name == '' then return '' end
-  if vim.bo.modified then return ' ' .. name .. ' %#WinbarModified#● unsaved%*' end
-  return ' ' .. name
+
+  local ok, navic = pcall(require, 'nvim-navic')
+  local context = (ok and navic.is_available()) and navic.get_location() or ''
+
+  local modified = vim.bo.modified and '%#WinbarModified#● unsaved%*' or ''
+
+  if context == '' and modified == '' then return '' end
+  if context == '' then return ' ' .. modified end
+  if modified == '' then return ' ' .. context end
+  return ' ' .. context .. '  ' .. modified
 end
 
 vim.o.winbar = "%{%v:lua.dotfiles_winbar_status()%}"
