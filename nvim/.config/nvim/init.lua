@@ -298,6 +298,9 @@ require 'custom.isml-expr-highlight'
 -- Render <iscomment>...</iscomment> blocks as real (dimmed/italic) comments
 require 'custom.isml-comment-highlight'
 
+-- Winbar with a bold "unsaved" marker, so an unsaved buffer is unmissable
+require 'custom.winbar'
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -1086,6 +1089,19 @@ require('lazy').setup({
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function() return '%2l:%-2v' end
+
+      -- Recolor the modified ([+]) flag so an unsaved buffer is easy to
+      -- notice at a glance, instead of blending into the filename's color
+      -- (the default -- see docs/neovim.md's "Unsaved changes" section).
+      local diag_error_fg = vim.api.nvim_get_hl(0, { name = 'DiagnosticError' }).fg
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModified', { fg = diag_error_fg, bold = true })
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_filename = function(args)
+        if vim.bo.buftype == 'terminal' then return '%t' end
+        local base = statusline.is_truncated(args.trunc_width) and '%f' or '%F'
+        local modified = vim.bo.modified and '%#MiniStatuslineModified#[+]%#MiniStatuslineFilename#' or ''
+        return base .. modified .. '%r'
+      end
 
       -- ... and there is more!
       --  Check out: https://github.com/nvim-mini/mini.nvim
