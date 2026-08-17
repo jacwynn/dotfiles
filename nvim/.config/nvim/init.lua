@@ -1117,6 +1117,16 @@ require('lazy').setup({
         } do
           seg_bg[name] = vim.api.nvim_get_hl(0, { name = name }).bg
         end
+        -- The dimmed directory text (see section_filename below) needs the
+        -- *same* background as the rest of the filename segment, not
+        -- Comment's own (which has none, so it fell through to whatever's
+        -- behind the statusline -- a visibly different/seamed background
+        -- right after the filename instead of one continuous pill).
+        vim.api.nvim_set_hl(
+          0,
+          'MiniStatuslineFilenameDir',
+          { fg = vim.api.nvim_get_hl(0, { name = 'Comment' }).fg, bg = seg_bg['MiniStatuslineFilename'] }
+        )
       end
       vim.api.nvim_create_autocmd('ColorScheme', {
         group = vim.api.nvim_create_augroup('custom-statusline-arrows-hl', { clear = true }),
@@ -1258,7 +1268,7 @@ require('lazy').setup({
       -- very deep, un-shortened path, '%<' can still fall back to eating
       -- into the filename; that tradeoff is accepted here in exchange for
       -- always seeing the full directory when there's room for it.
-      vim.api.nvim_set_hl(0, 'MiniStatuslineFilenameDir', { link = 'Comment' })
+      -- (MiniStatuslineFilenameDir itself is set in resolve_statusline_colors above.)
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_filename = function(args)
         if vim.bo.buftype == 'terminal' then return '%t' end
