@@ -1081,6 +1081,84 @@ require('lazy').setup({
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
       local statusline = require 'mini.statusline'
+
+      -- Powerline arrows between statusline segments, matching the tmux bar
+      -- above it and the winbar below (lua/custom/winbar.lua) -- same
+      -- U+E0B0/U+E0B2 glyphs tmux-themepack uses, in the same direction
+      -- convention: right-pointing arrows joining the left-aligned segments
+      -- (mode -> git/diff -> filename), left-pointing joining the
+      -- right-aligned ones (filetype -> location), each cluster capped with
+      -- an arrow into/out of the plain 'StatusLine' background rather than
+      -- one color bleeding straight into the next (see
+      -- ~/.tmux/plugins/tmux-themepack/powerline/default/cyan.tmuxtheme for
+      -- the pattern this mirrors).
+      local ARROW_R = '\238\130\176' -- U+E0B0, solid right-pointing arrow
+      local ARROW_L = '\238\130\178' -- U+E0B2, solid left-pointing arrow
+
+      -- Segment background colors and derived arrow highlight groups are
+      -- resolved once (and on ColorScheme) rather than on every redraw --
+      -- mode is the only thing that varies per-redraw, and it's just a
+      -- lookup into a small fixed table by then.
+      local seg_bg, arrow_hl_cache
+      local function resolve_statusline_colors()
+        arrow_hl_cache = {}
+        seg_bg = {}
+        for _, name in ipairs {
+          'MiniStatuslineModeNormal',
+          'MiniStatuslineModeInsert',
+          'MiniStatuslineModeVisual',
+          'MiniStatuslineModeReplace',
+          'MiniStatuslineModeCommand',
+          'MiniStatuslineModeOther',
+          'MiniStatuslineDevinfo',
+          'MiniStatuslineFilename',
+          'MiniStatuslineFileinfo',
+          'StatusLine',
+        } do
+          seg_bg[name] = vim.api.nvim_get_hl(0, { name = name }).bg
+        end
+      end
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        group = vim.api.nvim_create_augroup('custom-statusline-arrows-hl', { clear = true }),
+        callback = resolve_statusline_colors,
+      })
+      resolve_statusline_colors() -- safe to call now: tokyonight (priority 1000) already loaded
+
+      ---@param fg_hl string highlight group whose bg becomes the arrow's fg (the segment being left, for '->', or entered, for '<-')
+      ---@param bg_hl string highlight group whose bg becomes the arrow's bg (the segment being entered, for '->', or left, for '<-')
+      local function arrow_hl(fg_hl, bg_hl)
+        local key = fg_hl .. '__' .. bg_hl
+        if not arrow_hl_cache[key] then
+          vim.api.nvim_set_hl(0, key, { fg = seg_bg[fg_hl], bg = seg_bg[bg_hl] })
+          arrow_hl_cache[key] = true
+        end
+        return key
+      end
+
+      ---@param segs { text: string, hl: string }[]
+      ---@param cap_into_hl string highlight group to close the chain into
+      local function render_chain_right(segs, cap_into_hl)
+        local out = {}
+        for i, seg in ipairs(segs) do
+          table.insert(out, '%#' .. seg.hl .. '# ' .. seg.text .. ' ')
+          local nxt_hl = segs[i + 1] and segs[i + 1].hl or cap_into_hl
+          table.insert(out, '%#' .. arrow_hl(seg.hl, nxt_hl) .. '#' .. ARROW_R)
+        end
+        return table.concat(out)
+      end
+
+      ---@param segs { text: string, hl: string }[]
+      ---@param cap_from_hl string highlight group to open the chain from
+      local function render_chain_left(segs, cap_from_hl)
+        local out = {}
+        for i, seg in ipairs(segs) do
+          local prv_hl = segs[i - 1] and segs[i - 1].hl or cap_from_hl
+          table.insert(out, '%#' .. arrow_hl(seg.hl, prv_hl) .. '#' .. ARROW_L)
+          table.insert(out, '%#' .. seg.hl .. '# ' .. seg.text .. ' ')
+        end
+        return table.concat(out)
+      end
+
       -- Set `use_icons` to true if you have a Nerd Font
       --
       -- content.active mirrors mini.statusline's own default layout (see
@@ -1101,15 +1179,32 @@ require('lazy').setup({
             local location = statusline.section_location { trunc_width = 75 }
             local search = statusline.section_searchcount { trunc_width = 75 }
 
-            return statusline.combine_groups {
-              { hl = mode_hl, strings = { mode } },
-              { hl = 'MiniStatuslineDevinfo', strings = { git, diff } },
-              '%<',
-              { hl = 'MiniStatuslineFilename', strings = { filename } },
-              '%=',
-              { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
-              { hl = mode_hl, strings = { search, location } },
-            }
+            local devinfo = table.concat(vim.tbl_filter(function(s) return s ~= '' end, { git, diff }), ' ')
+            local loc_text = table.concat(vim.tbl_filter(function(s) return s ~= '' end, { search, location }), ' ')
+
+            local pre_segs = { { text = mode, hl = mode_hl } }
+            if devinfo ~= '' then table.insert(pre_segs, { text = devinfo, hl = 'MiniStatuslineDevinfo' }) end
+
+            local post_segs = {}
+            if fileinfo ~= '' then table.insert(post_segs, { text = fileinfo, hl = 'MiniStatuslineFileinfo' }) end
+            if loc_text ~= '' then table.insert(post_segs, { text = loc_text, hl = mode_hl }) end
+
+            -- '%<' sits right before the filename segment specifically (not
+            -- after the whole left cluster), same as before this change --
+            -- so on a narrow window, truncation eats mode/git/diff first
+            -- and never the filename itself (see the filename-first note
+            -- below).
+            local pre = render_chain_right(pre_segs, 'MiniStatuslineFilename')
+            local filename_part = '%#MiniStatuslineFilename# '
+              .. filename
+              .. ' '
+              .. '%#'
+              .. arrow_hl('MiniStatuslineFilename', 'StatusLine')
+              .. '#'
+              .. ARROW_R
+            local post = render_chain_left(post_segs, 'StatusLine')
+
+            return pre .. '%<' .. filename_part .. '%=' .. post .. '%*'
           end,
         },
       }
