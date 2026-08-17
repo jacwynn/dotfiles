@@ -1215,6 +1215,16 @@ require('lazy').setup({
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function() return '%2l:%-2v' end
 
+      -- Git: drop the "Git" text label (mini's fallback when there's no
+      -- nerd font for an icon) -- the branch name alone is enough context.
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_git = function(args)
+        if statusline.is_truncated(args.trunc_width) then return '' end
+        local summary = vim.b.minigit_summary_string or vim.b.gitsigns_head
+        if summary == nil then return '' end
+        return summary == '' and '-' or summary
+      end
+
       -- Diff: hide the section entirely when there's nothing to show,
       -- instead of a bare "-" that reads like a typo rather than "no
       -- changes". Still shows the normal +added ~changed -deleted summary
