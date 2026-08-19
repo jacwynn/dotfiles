@@ -992,7 +992,14 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets' },
+        -- 'buffer' fuzzy-matches words already present in visible buffers,
+        -- independent of LSP semantics -- catches cases the 'lsp' source
+        -- can't, like an ISML template variable declared with <isset
+        -- name="defaultName" .../> and referenced later as
+        -- ${defaultName}: the html LSP has no idea ISML's isset even
+        -- exists, so it never offers that name as a completion candidate,
+        -- but it's still plain text sitting in the buffer once typed once.
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
       },
 
       snippets = { preset = 'luasnip' },
