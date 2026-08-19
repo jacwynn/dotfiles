@@ -524,6 +524,12 @@ require('lazy').setup({
           -- path, truncation then eats into the directory instead of the
           -- filename, which is the part actually worth keeping visible.
           path_display = { 'filename_first' },
+          -- Open every picker in Normal mode instead of Telescope's default
+          -- Insert mode -- press 'i' when you actually want to type a
+          -- query. Applies to every builtin picker/theme (find_files,
+          -- live_grep, the ui-select dropdown, etc) since none of them
+          -- hardcode their own initial_mode to override this default.
+          initial_mode = 'normal',
         },
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
