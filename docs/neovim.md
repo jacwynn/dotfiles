@@ -9,6 +9,7 @@ Based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), pinned to
 - Telescope: `path_display = { 'filename_first' }` (filename first, dimmed directory second, so a long path never buries the filename — see the `mini.statusline` bullet below for the same idea there) and `initial_mode = 'normal'` (every picker opens in Normal mode instead of Telescope's default Insert mode — press `i` when you actually want to type a query). Both set in `defaults`, so they apply to every builtin picker and theme (find_files, live_grep, the `ui-select` dropdown, etc), since none of them override `initial_mode` on their own.
 - `lua/custom/plugins/fine-cmdline.lua`: `fine-cmdline.nvim` — `:` opens a floating, rounded-border "Cmdline" input instead of the plain bottom-line prompt (just that one piece, not a full `noice.nvim`-style overhaul of messages/search/LSP progress, which would overlap with `fidget.nvim`). `;` (this config's `:`-alias) is deliberately left unremapped, so it still opens the plain built-in cmdline as a fallback. Per the plugin's own README, it doesn't run inside real command-line-mode, so features tied to that (e.g. live substitute preview) don't work here.
 - `lua/custom/plugins/nvim-notify.lua`: `nvim-notify` — replaces `vim.notify()` (used by Neovim itself and every plugin's own notify calls, including this config's own buffer auto-reload notice and the ISML highlighter's error notify) with animated floating toast popups instead of a plain one-line message. No overlap with `fidget.nvim`: its `override_vim_notify` option defaults to `false`, so fidget only ever renders LSP `$/progress` in its own corner widget and never touches `vim.notify()`.
+- `lua/custom/plugins/persistence.lua`: `persistence.nvim` — the Neovim-side equivalent of tmux-resurrect (see [tmux.md](tmux.md)): auto-saves the open buffers/window layout per project directory and git branch in the background, restored on demand with `<leader>qs` (never automatically). See [Session persistence](#session-persistence) below.
 - `mini.files` (from the already-installed `mini.nvim`, so no new plugin): `<leader>e` opens a floating file explorer at the current file's directory, with that file pre-selected — falls back to cwd from an unnamed/non-file buffer. It's a normal editable buffer: rename a line to rename the file, `dd` to delete, `:w` to apply the changes. Replaces netrw's `:Ex`/`:Explore` as the everyday file browser (netrw itself is untouched, still there if you want it).
 - `lua/custom/snippets/isml/isml.json`: ISML tag snippets (`isif`, `isloop`, `isset`, etc) loaded via LuaSnip's VS Code-format loader — Emmet-style completion for SFCC's own tags, which Emmet doesn't know about. See [sfcc.md](sfcc.md).
 - `after/queries/html/highlights.scm`: recolors ISML tag names (`isif`, `isloop`, etc) as `@keyword` instead of plain `@tag`, so they read as SFCC's own control-flow tags rather than markup. See [sfcc.md](sfcc.md).
@@ -128,6 +129,19 @@ Leader is `<space>`. Two mnemonics cover most of it: **`<leader>s...`** = Search
 | `:Explore` (or `:Ex`) | Open netrw's file explorer — still available, but `<leader>e` (mini.files) is the everyday one now, see below |
 
 If you forget everything else: hit `<leader>` and wait — `which-key` shows every available keybind live from wherever your cursor is.
+
+## Session persistence
+
+The Neovim-side equivalent of tmux-resurrect (see [tmux.md](tmux.md)): `persistence.nvim` auto-saves the open buffers and window layout for the current directory + git branch every time you exit, but it *never* restores automatically — you choose when.
+
+| Key | Action |
+|---|---|
+| `<leader>qs` | Restore the session for the current directory |
+| `<leader>qS` | Pick from all saved sessions |
+| `<leader>ql` | Restore the last session, regardless of directory |
+| `<leader>qd` | Don't save a session on exit this time |
+
+`<leader>q` alone is already bound to diagnostics-to-quickfix — these `q*` keymaps coexist fine with it (Neovim just waits `timeoutlen` to see if more keys are coming before firing the bare `<leader>q`), they don't override it.
 
 ## Harpoon
 
