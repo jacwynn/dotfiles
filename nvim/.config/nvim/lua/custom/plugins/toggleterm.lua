@@ -17,6 +17,25 @@
 -- buffer/job/scrollback aren't touched though (confirmed headlessly), so
 -- switching back to it (e.g. <leader>tt) reopens instantly with everything
 -- intact -- "independent" means separate state, not simultaneously visible.
+-- lazygit gets its own dedicated terminal (rather than reusing the numbered
+-- <leader>tt terminals above) so toggling it never collides with whatever
+-- shell command happens to be running in terminal 1/2/etc. Built once and
+-- reused via :toggle() -- not recreated on every keypress -- so repeated
+-- <leader>gg presses show/hide the same instance instead of spawning a new
+-- lazygit process each time.
+local lazygit
+
+local function toggle_lazygit()
+  lazygit = lazygit
+    or require('toggleterm.terminal').Terminal:new {
+      cmd = 'lazygit',
+      hidden = true,
+      direction = 'float',
+      float_opts = { border = 'curved' },
+    }
+  lazygit:toggle()
+end
+
 return {
   'akinsho/toggleterm.nvim',
   version = '*',
@@ -32,5 +51,6 @@ return {
       mode = 'n',
     },
     { '<leader>tt', '<cmd>ToggleTerm<CR>', desc = 'Hide/restore current terminal', mode = 't' },
+    { '<leader>gg', toggle_lazygit, desc = '[G]it (lazygit)' },
   },
 }

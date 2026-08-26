@@ -143,6 +143,7 @@ brew_formulae=(
   fd        # required by Telescope's file finder
   tree-sitter-cli # treesitter parser CLI (Homebrew split this from the `tree-sitter` library formula)
   tmux
+  lazygit   # git TUI, opened from Neovim via <leader>gg (see toggleterm.lua)
 )
 for f in "${brew_formulae[@]}"; do
   if brew list --formula "$f" >/dev/null 2>&1; then
