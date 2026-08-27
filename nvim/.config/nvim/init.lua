@@ -352,12 +352,17 @@ require('lazy').setup({
     ---@type Gitsigns.Config
     ---@diagnostic disable-next-line: missing-fields
     opts = {
+      -- Solid bar for every hunk type instead of +/~/_ characters (VS
+      -- Code-style git gutter) -- the sign's color (gitsigns' own
+      -- GitsignsAdd/Change/Delete highlight groups, untouched here) is
+      -- already what distinguishes add/change/delete, so the glyph itself
+      -- doesn't need to.
       signs = {
-        add = { text = '+' }, ---@diagnostic disable-line: missing-fields
-        change = { text = '~' }, ---@diagnostic disable-line: missing-fields
-        delete = { text = '_' }, ---@diagnostic disable-line: missing-fields
-        topdelete = { text = '‾' }, ---@diagnostic disable-line: missing-fields
-        changedelete = { text = '~' }, ---@diagnostic disable-line: missing-fields
+        add = { text = '▎' }, ---@diagnostic disable-line: missing-fields
+        change = { text = '▎' }, ---@diagnostic disable-line: missing-fields
+        delete = { text = '▎' }, ---@diagnostic disable-line: missing-fields
+        topdelete = { text = '▎' }, ---@diagnostic disable-line: missing-fields
+        changedelete = { text = '▎' }, ---@diagnostic disable-line: missing-fields
       },
       on_attach = function(bufnr)
         local gitsigns = require 'gitsigns'
