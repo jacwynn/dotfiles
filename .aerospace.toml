@@ -69,6 +69,12 @@ alt-comma = 'layout accordion'                 # stack windows accordion-style i
 alt-enter = 'fullscreen'                       # toggle fullscreen for the focused window
 alt-shift-space = 'layout floating tiling'     # toggle floating for the focused window
 
+# Resize the focused window -- 'smart' resizes width or height depending on
+# which way the window is actually split from its neighbor, so one pair of
+# keys covers both instead of needing separate width/height bindings.
+alt-minus = 'resize smart -50'
+alt-equal = 'resize smart +50'
+
 # Reload this config after editing it, without restarting AeroSpace
 alt-shift-r = 'reload-config'
 
