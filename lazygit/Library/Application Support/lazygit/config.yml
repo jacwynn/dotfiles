@@ -1,0 +1,4 @@
+gui:
+  # Hides the rotating "Donate"/"Ask Question" links shown in the bottom-right
+  # of lazygit's UI.
+  showRandomTip: false

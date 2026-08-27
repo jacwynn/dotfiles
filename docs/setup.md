@@ -3,12 +3,13 @@
 ## Layout
 
 ```
-.zshrc                    -> ~/.zshrc
-.tmux.conf                -> ~/.tmux.conf
-.aerospace.toml           -> ~/.aerospace.toml
-nvim/.config/nvim/         -> ~/.config/nvim
-install.sh                 bootstrap script for a new machine
-docs/                       one doc per feature/configuration (this file included)
+.zshrc                                                  -> ~/.zshrc
+.tmux.conf                                              -> ~/.tmux.conf
+.aerospace.toml                                         -> ~/.aerospace.toml
+nvim/.config/nvim/                                       -> ~/.config/nvim
+lazygit/Library/Application Support/lazygit/config.yml  -> ~/Library/Application Support/lazygit/config.yml
+install.sh                                                bootstrap script for a new machine
+docs/                                                      one doc per feature/configuration (this file included)
 ```
 
 oh-my-zsh itself (`~/.oh-my-zsh`) is not tracked here — it's a separate, self-updating install (its own git clone), managed by oh-my-zsh's own installer/updater rather than this repo.
@@ -25,7 +26,7 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 ```
 
 `install.sh` is idempotent (safe to re-run) and:
-- symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, and the nvim config into place
+- symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, the nvim config, and lazygit's `config.yml` into place
 - installs Xcode Command Line Tools / Homebrew if missing
 - installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, `tmux`, and a Nerd Font
 - taps `nikitabobko/tap` and installs AeroSpace if missing (see [aerospace.md](aerospace.md))

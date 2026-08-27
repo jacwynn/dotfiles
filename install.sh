@@ -111,6 +111,7 @@ link "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/.aerospace.toml" "$HOME/.aerospace.toml"
+link "$DOTFILES_DIR/lazygit/Library/Application Support/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo
