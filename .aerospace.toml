@@ -69,6 +69,19 @@ alt-comma = 'layout accordion'                 # stack windows accordion-style i
 alt-enter = 'fullscreen'                       # toggle fullscreen for the focused window
 alt-shift-space = 'layout floating tiling'     # toggle floating for the focused window
 
+# Merge the focused window with its neighbor in a direction into one shared
+# split container -- e.g. to get one window on the left and two stacked on
+# the right: focus the right window, open/focus a third window, then
+# alt-ctrl-k (or -j) to stack it with whichever neighbor is above/below.
+# 'split' (AeroSpace's other, i3-style command for this) is a no-op here:
+# enable-normalization-flatten-containers defaults to true and isn't
+# overridden below, and AeroSpace's own docs say 'split' has no effect
+# whenever that's on -- 'join-with' is the one that actually works.
+alt-ctrl-h = 'join-with left'
+alt-ctrl-j = 'join-with down'
+alt-ctrl-k = 'join-with up'
+alt-ctrl-l = 'join-with right'
+
 # Resize the focused window -- 'smart' resizes width or height depending on
 # which way the window is actually split from its neighbor, so one pair of
 # keys covers both instead of needing separate width/height bindings.
