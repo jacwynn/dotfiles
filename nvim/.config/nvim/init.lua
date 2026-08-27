@@ -1116,6 +1116,22 @@ require('lazy').setup({
       local function resolve_statusline_colors()
         arrow_hl_cache = {}
         seg_bg = {}
+
+        -- Harpoon pill: same "bright bg, dark text" treatment as the mode
+        -- segments (ModeNormal/ModeInsert/etc) and winbar.lua's own
+        -- segments, rather than plain colored text sitting on the filename
+        -- pill's background -- so a harpoon mark reads as one more segment
+        -- in the powerline chain instead of a mismatched label glued onto
+        -- another segment. DiagnosticWarn's color borrowed for the same
+        -- reason MiniStatuslineModified borrows DiagnosticError below: an
+        -- "attention" color that's already part of the active colorscheme
+        -- rather than a new one invented just for this.
+        vim.api.nvim_set_hl(0, 'MiniStatuslineHarpoon', {
+          fg = vim.api.nvim_get_hl(0, { name = 'Normal' }).bg,
+          bg = vim.api.nvim_get_hl(0, { name = 'DiagnosticWarn' }).fg,
+          bold = true,
+        })
+
         for _, name in ipairs {
           'MiniStatuslineModeNormal',
           'MiniStatuslineModeInsert',
@@ -1126,6 +1142,7 @@ require('lazy').setup({
           'MiniStatuslineDevinfo',
           'MiniStatuslineFilename',
           'MiniStatuslineFileinfo',
+          'MiniStatuslineHarpoon',
           'StatusLine',
         } do
           seg_bg[name] = vim.api.nvim_get_hl(0, { name = name }).bg
@@ -1182,6 +1199,32 @@ require('lazy').setup({
         return table.concat(out)
       end
 
+      -- Harpoon status (e.g. "H2") shown as its own pill right next to the
+      -- filename, when the current file is one of harpoon's marks -- so a
+      -- marked file is obvious at a glance instead of having to open the
+      -- quick menu (<C-e>) to check. (MiniStatuslineHarpoon's color is set
+      -- in resolve_statusline_colors above, alongside the other segment
+      -- pills.) Matches the item's `value` the same way harpoon itself
+      -- computes it (lua/harpoon/config.lua's default create_list_item:
+      -- buffer name made relative to cwd via plenary's Path), rather than
+      -- re-deriving an equivalent path some other way that could drift out
+      -- of sync with however harpoon decides to normalize it.
+      ---@return string
+      local function harpoon_status()
+        local ok, harpoon = pcall(require, 'harpoon')
+        if not ok then return '' end
+
+        local bufname = vim.api.nvim_buf_get_name(0)
+        if bufname == '' then return '' end
+
+        local Path = require 'plenary.path'
+        local rel = Path:new(bufname):make_relative(vim.loop.cwd())
+        local _, index = harpoon:list():get_by_value(rel)
+        if not index then return '' end
+
+        return 'H' .. index
+      end
+
       -- Set `use_icons` to true if you have a Nerd Font
       --
       -- content.active mirrors mini.statusline's own default layout (see
@@ -1204,11 +1247,16 @@ require('lazy').setup({
 
             local devinfo = table.concat(vim.tbl_filter(function(s) return s ~= '' end, { git, diff }), ' ')
             local loc_text = table.concat(vim.tbl_filter(function(s) return s ~= '' end, { search, location }), ' ')
+            local harpoon = harpoon_status()
 
             local pre_segs = { { text = mode, hl = mode_hl } }
             if devinfo ~= '' then table.insert(pre_segs, { text = devinfo, hl = 'MiniStatuslineDevinfo' }) end
 
+            -- Harpoon goes first in post_segs -- right next to the filename,
+            -- ahead of fileinfo/location -- since it's telling you about
+            -- this specific file, not general cursor/filetype info.
             local post_segs = {}
+            if harpoon ~= '' then table.insert(post_segs, { text = harpoon, hl = 'MiniStatuslineHarpoon' }) end
             if fileinfo ~= '' then table.insert(post_segs, { text = fileinfo, hl = 'MiniStatuslineFileinfo' }) end
             if loc_text ~= '' then table.insert(post_segs, { text = loc_text, hl = mode_hl }) end
 
