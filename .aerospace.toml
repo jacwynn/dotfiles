@@ -63,6 +63,13 @@ alt-shift-9 = 'move-node-to-workspace 9'
 alt-c = 'workspace C' # C for terminal (Ghostty)
 alt-x = 'workspace X' # browser (Chrome)
 
+# Same idea as alt-c/alt-x above, but these also launch the app itself (macOS's
+# `open -a` both starts it if it's not running and activates its existing
+# window if it already is), rather than assuming it's already open.
+alt-e = ['workspace E', 'exec-and-forget open -a "Microsoft Outlook"'] # E for Email (Outlook)
+alt-t = ['workspace T', 'exec-and-forget open -a "Microsoft Teams"']   # T for Teams
+alt-n = ['workspace N', 'exec-and-forget open -a "Notion"']            # N for Notion
+
 # Layout controls
 alt-slash = 'layout tiles horizontal vertical' # toggle between horizontal/vertical tiling
 alt-comma = 'layout accordion'                 # stack windows accordion-style instead
@@ -101,3 +108,30 @@ run = 'move-node-to-workspace C'
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
 run = 'move-node-to-workspace X'
+
+# UNVERIFIED: Outlook isn't installed on this machine, so this bundle ID is
+# the standard/documented Microsoft Office one, not confirmed against a real
+# install. If this rule doesn't fire once Outlook is actually installed,
+# check the real ID with `aerospace list-apps` while it's running and fix
+# this to match.
+[[on-window-detected]]
+if.app-id = 'com.microsoft.Outlook'
+run = 'move-node-to-workspace E'
+
+# UNVERIFIED: two different lookups on this machine disagreed --
+# `mdls`/the app's own Info.plist say `com.microsoft.teams`, but a live
+# AppleScript query ("id of app") says `com.microsoft.teams2`. Going with
+# teams2 since that's what's actually registered at runtime (what AeroSpace
+# itself would see), but if this rule doesn't fire, check the real ID with
+# `aerospace list-apps` while Teams is running and fix this to match.
+[[on-window-detected]]
+if.app-id = 'com.microsoft.teams2'
+run = 'move-node-to-workspace T'
+
+# Notion isn't currently installed either, but unlike Outlook this one's
+# confirmed from leftover data on this machine from a previous install
+# (~/Library/Preferences/notion.id.plist) -- an unusual bundle ID (no
+# reverse-domain prefix) but a real, verified one, not a guess.
+[[on-window-detected]]
+if.app-id = 'notion.id'
+run = 'move-node-to-workspace N'
