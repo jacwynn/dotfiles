@@ -8,6 +8,8 @@ Config lives at `~/.config/omniwm/settings.toml`, tracked and symlinked in from 
 
 **Layout modes**: each workspace is independently either `niri` (windows live in columns in an infinite horizontal strip — new windows add a column rather than shrinking existing ones, navigate by scrolling) or `dwindle` (i3/AeroSpace-style binary space partitioning — the screen is always fully tiled, new windows split whatever's focused). `Option+Shift+D` toggles the current workspace between the two on the fly, so it's easy to compare them side by side rather than committing to one.
 
+Layout is a per-*workspace* setting, not per-monitor — there's no config that forces "this monitor always uses dwindle" regardless of which workspace is showing (`monitorDwindleOverrides`/`monitorNiriOverrides` only tune each layout's own behavior — split ratios, gap sizes — not which layout gets picked). Workspaces 6/7 (the secondary/vertical monitor) are left on `niri` like everything else — switch a given workspace to `dwindle` manually with `Option+Shift+D` if niri's columns don't suit it in the moment.
+
 **Focus / move** (customized to vim keys — the defaults are `Option+Arrow`)
 | Key | Action |
 |---|---|

@@ -35,7 +35,7 @@ useGlobalGaps = true
 [focus]
 crossesMonitorAtEdge = false
 followsMouse = false
-followsWindowToMonitor = false
+followsWindowToMonitor = true
 lockModifier = "off"
 moveCrossesMonitorAtEdge = false
 moveMouseToFocusedWindow = false
@@ -135,8 +135,22 @@ position = "center"
 widthPercent = 50.0
 
 [routing]
-arrangements = []
-mode = "macOS"
+mode = "custom"
+
+[[routing.arrangements]]
+id = "8A6CE20B-65B1-4D55-A326-6568BF49D42D"
+
+[[routing.arrangements.monitors]]
+gridColumn = 0
+gridRow = 0
+monitorDisplayUUID = "12A5B275-8792-4D59-B917-32B02C4783B0"
+monitorName = "ASUS VN248"
+
+[[routing.arrangements.monitors]]
+gridColumn = 1
+gridRow = 0
+monitorDisplayUUID = "ACE7430C-3B30-4451-8114-41134831969A"
+monitorName = "LG HDR WFHD"
 
 [scratchpads]
 
@@ -678,19 +692,19 @@ binding = "Unassigned"
 id = "moveWorkspaceToMonitor.down"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+H"
 id = "moveWindowToMonitor.left"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+L"
 id = "moveWindowToMonitor.right"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+K"
 id = "moveWindowToMonitor.up"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+J"
 id = "moveWindowToMonitor.down"
 
 [[hotkeys]]
@@ -1023,7 +1037,7 @@ type = "main"
 
 [[workspaces]]
 id = "454CECD4-5E9D-4ED1-95D7-979D48817F5F"
-layoutType = "niri"
+layoutType = "dwindle"
 name = "2"
 
 [workspaces.monitorAssignment]
