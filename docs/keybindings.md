@@ -12,12 +12,43 @@ Leader is `<space>`.
 | `<leader>sf` | Find files |
 | `<leader>sg` | Live grep |
 | `<leader>sw` | Grep word under cursor |
-| `<leader><leader>` | Switch buffers |
+| `<leader><leader>` | Switch buffers (Telescope) |
 | `<leader>/` | Fuzzy search current buffer |
+| `<leader>j` | Flash: jump to a visible location (type 1-2 chars, press the label) |
 | `<leader>s.` | Recent files |
 | `<leader>sd` | Search diagnostics |
 | `<leader>sh` | Search help |
 | `<leader>sk` | Search keymaps |
+
+**Tabs (bufferline)**
+| Key | Action |
+|---|---|
+| `Shift-H` / `Shift-L` | Previous / next tab |
+| `<leader>t1` .. `t9` | Jump straight to tab N by position |
+| `<leader>bd` | Close current tab |
+
+**File explorer (mini.files)**
+| Key | Action |
+|---|---|
+| `<leader>e` | Open at the current file's directory (falls back to cwd) |
+| Edit a line | Rename that file/directory |
+| `dd` | Delete |
+| New line with a name (`dir/` for a directory) | Create a file/directory, nested paths in one line |
+| `=` | Synchronize — apply pending changes (confirmation dialog first; *not* `:w`) |
+
+**Terminal**
+| Key | Action |
+|---|---|
+| `<leader>tt` | Toggle a floating terminal (prefix with a count, e.g. `2<leader>tt`, for another independent one) |
+| `<leader>gg` | Toggle lazygit, in its own dedicated terminal |
+
+**Sessions (persistence.nvim)**
+| Key | Action |
+|---|---|
+| `<leader>qs` | Restore session for this directory |
+| `<leader>qS` | Pick a session to restore |
+| `<leader>ql` | Restore the last session |
+| `<leader>qd` | Don't save a session on exit |
 
 **LSP**
 | Key | Action |
