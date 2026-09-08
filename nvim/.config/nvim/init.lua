@@ -288,6 +288,20 @@ vim.api.nvim_create_autocmd('FileChangedShellPost', {
   callback = function() vim.notify('File changed on disk, buffer reloaded', vim.log.levels.INFO) end,
 })
 
+-- Neovim's own `"file" NNL, NNB written` save confirmation doesn't go
+-- through vim.notify() at all (it's a plain :echo/message, not a notify
+-- call), so nvim-notify's animated-toast styling never applied to it even
+-- though nvim-notify is already the vim.notify() backend for everything
+-- else in this config. shortmess+=W suppresses that native message
+-- entirely (see :help shm-W) so this replacement is the only one shown,
+-- rather than stacking a second message underneath it.
+vim.opt.shortmess:append 'W'
+vim.api.nvim_create_autocmd('BufWritePost', {
+  desc = 'Notify on save, styled like every other notification instead of a plain :echo message',
+  group = vim.api.nvim_create_augroup('custom-save-notify', { clear = true }),
+  callback = function() vim.notify('Saved ' .. vim.fn.expand '%:t', vim.log.levels.INFO) end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
