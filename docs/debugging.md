@@ -11,17 +11,21 @@
 | `<F7>` | Toggle the debug UI (also shows last session's output) |
 | `<F8>` | Terminate the debug session |
 
+**Inline variable values** (`nvim-dap-virtual-text`): while stepping, a variable's current value shows as virtual text right next to it in the code itself — the same "inline debug values" a GUI debugger (VS Code, etc) gives you, rather than only being visible in the separate Scopes panel below.
+
 **The debug UI** (`<F7>`, also opens automatically when a session starts) is a two-region layout:
 
-*Left sidebar:*
-| Panel | Shows |
-|---|---|
-| Scopes | Local/global variables in the current stack frame |
-| Breakpoints | All breakpoints set, across files |
-| Stacks | Call stack — inspect variables at any point in the call chain |
-| Watches | Expressions you're tracking manually |
+*Left sidebar (50 columns wide):*
+| Panel | Shows | Share of the sidebar |
+|---|---|---|
+| Scopes | Local/global variables in the current stack frame | 45% — the one actually in constant use while stepping, so it gets the most room |
+| Breakpoints | All breakpoints set, across files | 20% |
+| Stacks | Call stack — inspect variables at any point in the call chain | 20% |
+| Watches | Expressions you're tracking manually | 15% |
 
-*Bottom:*
+(`nvim-dap-ui`'s own default splits all four evenly at 25% each in a 40-column sidebar — rebalanced here since Scopes is checked far more often than the other three.)
+
+*Bottom (12 rows):*
 | Panel | Shows |
 |---|---|
 | REPL | Evaluate any expression in the current stopped context (type it, hit Enter) |

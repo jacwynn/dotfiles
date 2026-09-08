@@ -75,6 +75,10 @@ return {
   dependencies = {
     'rcarriga/nvim-dap-ui',
     'nvim-neotest/nvim-nio', -- required by nvim-dap-ui
+    'theHamsta/nvim-dap-virtual-text', -- inline variable values while stepping,
+    -- next to the code itself instead of only in the separate Scopes panel --
+    -- the single biggest thing missing coming from a GUI debugger's inline
+    -- values (VS Code, etc). See its own require/setup call below.
   },
   keys = {
     { '<F5>', function() require('dap').continue() end, desc = 'Debug: Start/Continue' },
@@ -93,7 +97,34 @@ return {
     ---@diagnostic disable-next-line: missing-fields
     dapui.setup {
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+      -- dapui's own default gives every sidebar panel an equal 25% share
+      -- and a 40-column-wide sidebar -- cramped for `scopes` specifically,
+      -- the panel actually in constant use while stepping through code
+      -- (current variables and their values), versus breakpoints/stacks/
+      -- watches which are checked far less often. Widened the sidebar and
+      -- rebalanced the split in scopes' favor instead of an even 25% each.
+      layouts = {
+        {
+          elements = {
+            { id = 'scopes', size = 0.45 },
+            { id = 'breakpoints', size = 0.20 },
+            { id = 'stacks', size = 0.20 },
+            { id = 'watches', size = 0.15 },
+          },
+          size = 50,
+          position = 'left',
+        },
+        {
+          elements = { 'repl', 'console' },
+          size = 12,
+          position = 'bottom',
+        },
+      },
     }
+
+    -- Inline variable values next to the code itself while stepping,
+    -- instead of only in the separate scopes panel above.
+    require('nvim-dap-virtual-text').setup()
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
