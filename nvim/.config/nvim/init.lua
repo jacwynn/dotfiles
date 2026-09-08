@@ -547,6 +547,18 @@ require('lazy').setup({
           -- live_grep, the ui-select dropdown, etc) since none of them
           -- hardcode their own initial_mode to override this default.
           initial_mode = 'normal',
+          -- Prompt input field at the top of the picker instead of
+          -- Telescope's own default (bottom, for the 'horizontal' layout
+          -- strategy used here) -- results list stays right below it,
+          -- rather than the prompt sitting underneath the results.
+          layout_config = {
+            horizontal = { prompt_position = 'top' },
+          },
+          -- Best match at the top of the results (right next to the now-top
+          -- prompt) instead of Telescope's own default ('descending' --
+          -- best match at the bottom), so results read top-to-bottom in the
+          -- same direction as the prompt above them, best-first.
+          sorting_strategy = 'ascending',
         },
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
