@@ -6,6 +6,7 @@
 .zshrc                                                  -> ~/.zshrc
 .tmux.conf                                              -> ~/.tmux.conf
 .aerospace.toml                                         -> ~/.aerospace.toml
+omniwm/.config/omniwm/settings.toml                     -> ~/.config/omniwm/settings.toml
 nvim/.config/nvim/                                       -> ~/.config/nvim
 lazygit/Library/Application Support/lazygit/config.yml  -> ~/Library/Application Support/lazygit/config.yml
 install.sh                                                bootstrap script for a new machine
@@ -26,10 +27,11 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 ```
 
 `install.sh` is idempotent (safe to re-run) and:
-- symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, the nvim config, and lazygit's `config.yml` into place
+- symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, OmniWM's `settings.toml`, the nvim config, and lazygit's `config.yml` into place
 - installs Xcode Command Line Tools / Homebrew if missing
 - installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, `tmux`, and a Nerd Font
-- taps `nikitabobko/tap` and installs AeroSpace if missing (see [aerospace.md](aerospace.md))
+- installs OmniWM, the window manager actually in daily use (see [omniwm.md](omniwm.md))
+- taps `nikitabobko/tap` and installs AeroSpace if missing — kept as a fallback, not in daily use (see [aerospace.md](aerospace.md))
 - installs `nvm` + Node LTS if missing
 - clones TPM (tmux plugin manager) if missing — after that, start tmux and press `<prefix> + I` once to install the actual plugin list (see [tmux.md](tmux.md))
 - builds the SFCC debug adapter if `nvm` is available (see [sfcc.md](sfcc.md))

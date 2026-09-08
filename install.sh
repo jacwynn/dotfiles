@@ -111,6 +111,7 @@ link "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/.aerospace.toml" "$HOME/.aerospace.toml"
+link "$DOTFILES_DIR/omniwm/.config/omniwm/settings.toml" "$HOME/.config/omniwm/settings.toml"
 link "$DOTFILES_DIR/lazygit/Library/Application Support/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
@@ -175,7 +176,19 @@ else
 fi
 
 echo
-echo "== AeroSpace (tiling window manager) =="
+echo "== OmniWM (tiling window manager) =="
+# The one actually in daily use -- see omniwm.md. AeroSpace (below) is kept
+# installed too as a fallback, in case of ever switching back.
+if brew list --cask omniwm >/dev/null 2>&1; then
+  echo "ok:      omniwm already installed"
+else
+  brew install --cask omniwm
+  echo "OmniWM needs Accessibility permission to manage windows -- macOS will prompt for"
+  echo "this the first time you launch it (System Settings > Privacy & Security > Accessibility)."
+fi
+
+echo
+echo "== AeroSpace (tiling window manager -- fallback, not in daily use) =="
 # Not in homebrew-cask itself -- lives in the author's own tap.
 if brew list --cask nikitabobko/tap/aerospace >/dev/null 2>&1; then
   echo "ok:      aerospace already installed"

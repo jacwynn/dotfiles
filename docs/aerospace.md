@@ -1,5 +1,7 @@
 # AeroSpace
 
+**Kept installed as a fallback, not the window manager in daily use** — see [omniwm.md](omniwm.md) for the one actually running. This doc (and `.aerospace.toml`) stay as-is in case of ever switching back.
+
 [AeroSpace](https://github.com/nikitabobko/AeroSpace) is an i3-like tiling window manager for macOS. It operates one level above tmux: AeroSpace tiles whole macOS app windows (terminal, browser, etc), while tmux keeps handling panes *within* the terminal window — no overlap between the two, by design. Every binding below is Alt-based specifically so nothing collides with tmux's `C-s` prefix or `vim-tmux-navigator`'s `C-h/j/k/l` pane/split navigation (see [tmux.md](tmux.md)).
 
 Not in default `homebrew-cask` — it lives in the author's own tap (`nikitabobko/tap`), which `install.sh` taps automatically before installing it.
