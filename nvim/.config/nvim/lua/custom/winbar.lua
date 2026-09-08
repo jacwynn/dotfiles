@@ -1,23 +1,28 @@
 -- Winbar: LSP breadcrumbs for the cursor's current context (nvim-navic --
--- see lua/custom/plugins/navic.lua), e.g. "MyClass > myMethod", plus a bold
--- "unsaved" marker when the buffer has changes -- so an unsaved file is
--- impossible to miss even glancing at the top of the window. The filename
+-- see lua/custom/plugins/navic.lua), e.g. "MyClass > myMethod". The filename
 -- itself isn't repeated here -- mini.statusline already shows it
 -- filename-first, so it'd just be noise.
 --
--- Styled as powerline segments (solid color pill + arrow transition,
+-- No longer shows an "unsaved" marker -- bufferline.nvim's own modified dot
+-- on the tab itself (see lua/custom/plugins/bufferline.lua) already covers
+-- that, right at the point you'd look to check which file is open, so a
+-- second marker down here was redundant.
+--
+-- Styled as a powerline segment (solid color pill + arrow transition,
 -- U+E0B0) matching this setup's tmux status bar and mini.statusline (see
 -- init.lua's mini.statusline config, and
--- ~/.tmux/plugins/tmux-themepack/powerline/default/cyan.tmuxtheme), so the
--- winbar reads as a continuation of the bar directly above it (tmux's
--- status-position is "top") instead of looking like plain unstyled text
--- dropped in below it. Blue and red are both resolved at
--- runtime (see below) rather than hardcoded -- blue from
--- MiniStatuslineModeNormal's bg (tokyonight's own blue, #7aa2f7, the exact
--- shade tmux's @powerline-color-main-1 is overridden to match in
--- .tmux.conf -- keeping this dynamic instead of a second hardcoded copy is
--- what avoids the two silently drifting apart again), red from
--- DiagnosticError -- so both stay correct if the colorscheme ever changes.
+-- ~/.tmux/plugins/tmux-themepack/powerline/default/cyan.tmuxtheme), so all
+-- three read as one continuous color scheme rather than looking like plain
+-- unstyled text dropped in among styled bars. (tmux's status bar itself
+-- moved to status-position "bottom" once bufferline.nvim's tab strip took
+-- over the top of the editor -- this winbar sits right below that tab
+-- strip, not below tmux, but keeps the same powerline styling regardless
+-- of which bar is physically adjacent to it.) Blue is resolved at runtime
+-- (see below) rather than hardcoded -- from MiniStatuslineModeNormal's bg
+-- (tokyonight's own blue, #7aa2f7, the exact shade tmux's
+-- @powerline-color-main-1 is overridden to match in .tmux.conf -- keeping
+-- this dynamic instead of a second hardcoded copy is what avoids the two
+-- silently drifting apart again).
 --
 -- Only shown for normal, listed file buffers -- skipped for terminals,
 -- pickers, the mini.files explorer, etc (anything with a non-empty
@@ -38,19 +43,13 @@ local ARROW = '\238\130\176'
 local function set_winbar_hl()
   local normal_bg = vim.api.nvim_get_hl(0, { name = 'Normal' }).bg
   local blue = vim.api.nvim_get_hl(0, { name = 'MiniStatuslineModeNormal' }).bg
-  local diag_error_fg = vim.api.nvim_get_hl(0, { name = 'DiagnosticError' }).fg
 
-  -- Segment fills: bright bg, dark (the editor's own bg) text -- same trick
+  -- Segment fill: bright bg, dark (the editor's own bg) text -- same trick
   -- the tmux theme uses for its bright segments.
   vim.api.nvim_set_hl(0, 'WinbarContext', { fg = normal_bg, bg = blue, bold = true })
-  vim.api.nvim_set_hl(0, 'WinbarModified', { fg = normal_bg, bg = diag_error_fg, bold = true })
-  -- Arrow out of a segment back to the plain winbar background: the glyph
+  -- Arrow out of the segment back to the plain winbar background: the glyph
   -- takes the segment's color as its own foreground.
   vim.api.nvim_set_hl(0, 'WinbarContextArrow', { fg = blue, bg = normal_bg })
-  vim.api.nvim_set_hl(0, 'WinbarModifiedArrow', { fg = diag_error_fg, bg = normal_bg })
-  -- Arrow directly from the context segment into the modified segment,
-  -- when both are shown back-to-back.
-  vim.api.nvim_set_hl(0, 'WinbarContextToModified', { fg = blue, bg = diag_error_fg })
 end
 vim.api.nvim_create_autocmd(
   'ColorScheme',
@@ -63,21 +62,12 @@ _G.dotfiles_winbar_status = function()
 
   local ok, navic = pcall(require, 'nvim-navic')
   local context = (ok and navic.is_available()) and navic.get_location() or ''
-  local modified = vim.bo.modified
-
-  if context == '' and not modified then return '' end
+  if context == '' then return '' end
 
   -- No leading plain-background space here (unlike a typical winbar/
   -- statusline section) -- the whole point is for the colored pill to
   -- start flush against the left edge, same as tmux's own segments.
-  local out = ''
-  if context ~= '' then
-    out = out .. '%#WinbarContext# ' .. context .. ' '
-    out = out .. (modified and '%#WinbarContextToModified#' or '%#WinbarContextArrow#') .. ARROW
-  end
-  if modified then out = out .. '%#WinbarModified# ● unsaved %#WinbarModifiedArrow#' .. ARROW end
-
-  return out .. '%*'
+  return '%#WinbarContext# ' .. context .. ' %#WinbarContextArrow#' .. ARROW .. '%*'
 end
 
 vim.o.winbar = "%{%v:lua.dotfiles_winbar_status()%}"

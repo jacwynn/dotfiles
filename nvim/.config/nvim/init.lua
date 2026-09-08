@@ -91,7 +91,12 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+-- Flipped on for bufferline.nvim's tab icons (see
+-- lua/custom/plugins/bufferline.lua) -- this setup's terminal font already
+-- renders private-use glyphs fine elsewhere (winbar/statusline's powerline
+-- arrows, gitsigns' solid bar), so this was more a stale leftover default
+-- than a real constraint.
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 --  See `:help vim.o`
