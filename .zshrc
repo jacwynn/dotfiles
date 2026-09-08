@@ -111,6 +111,17 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ls="colorls"
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+# Claude Code's own binary lives here (~/.local/bin/claude) -- originally
+# added alongside the Antigravity PATH lines below (removed, no longer
+# used), but this one is unrelated to Antigravity and stays.
+export PATH="$HOME/.local/bin:$PATH"
+
+export PATH="/opt/homebrew/lib/ruby/gems/4.0.0/bin:$PATH"
