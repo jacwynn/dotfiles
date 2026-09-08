@@ -105,9 +105,12 @@ vim.g.have_nerd_font = true
 
 -- Make line numbers default
 vim.o.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+-- Combined with `number` above ("hybrid" mode): the current line still
+-- shows its real absolute number, every other line shows its distance
+-- from the cursor instead -- keeps operator+motion counts (d5j, y3k, >4j)
+-- small regardless of how deep into the file you are, since the number
+-- shown is always relative to right here, not to line 1.
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
