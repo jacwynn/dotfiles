@@ -178,13 +178,26 @@ fi
 echo
 echo "== OmniWM (tiling window manager) =="
 # The one actually in daily use -- see omniwm.md. AeroSpace (below) is kept
-# installed too as a fallback, in case of ever switching back.
+# installed too as a fallback, in case of ever switching back -- including
+# on a machine like this one, if it turns out to be too old for OmniWM.
+#
+# OmniWM's cask requires macOS >= 26 -- checked here explicitly (rather
+# than just letting `brew install` fail) so an old machine gets a clear,
+# one-line skip message instead of a scary brew error. And even with that
+# check, the actual install is still guarded against failing outright
+# (network issues, the cask changing, etc.) -- this script runs under
+# `set -euo pipefail`, so an unguarded failed command here would silently
+# kill everything after it, AeroSpace included, which is exactly the
+# fallback this machine would actually need.
 if brew list --cask omniwm >/dev/null 2>&1; then
   echo "ok:      omniwm already installed"
-else
-  brew install --cask omniwm
+elif [ "$(sw_vers -productVersion | cut -d. -f1)" -lt 26 ]; then
+  echo "skip:    omniwm needs macOS 26+ (this machine has $(sw_vers -productVersion)) -- AeroSpace below is the fallback for this"
+elif brew install --cask omniwm; then
   echo "OmniWM needs Accessibility permission to manage windows -- macOS will prompt for"
   echo "this the first time you launch it (System Settings > Privacy & Security > Accessibility)."
+else
+  echo "warn:    omniwm install failed -- continuing anyway, AeroSpace below is the fallback for this"
 fi
 
 echo
