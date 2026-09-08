@@ -24,7 +24,7 @@ Leader is `<space>`.
 | Key | Action |
 |---|---|
 | `Shift-H` / `Shift-L` | Previous / next tab |
-| `<leader>t1` .. `t9` | Jump straight to tab N by position |
+| `<leader>1` .. `9` | Jump straight to tab N by position (shown on the tab itself) |
 | `<leader>bd` | Close current tab |
 
 **File explorer (mini.files)**
@@ -100,13 +100,6 @@ Leader is `<space>`.
 | `<leader>q` | Diagnostics to quickfix |
 | `<Esc>` | Clear search highlight |
 | `<leader>ds` | SFCC: DW Sync picker |
-
-**Harpoon**
-| Key | Action |
-|---|---|
-| `<leader>a` | Add current file to the harpoon list |
-| `<C-e>` | Toggle the quick-menu |
-| `<leader>1` .. `7` | Jump straight to marked file 1–7 |
 
 **Folding**
 | Key | Action |

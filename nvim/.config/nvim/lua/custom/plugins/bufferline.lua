@@ -39,26 +39,26 @@ return {
       -- whatever space tab_size allows, rather than there being a
       -- dedicated "padding" setting.
       tab_size = 24,
+      -- Show each tab's position number (1, 2, 3...) directly on the tab
+      -- itself, matching the <leader>1-9 jump keys below -- 'ordinal'
+      -- specifically (not 'id', which would show the buffer number
+      -- instead -- unrelated to visual position, and not what go_to(N,
+      -- true) below actually targets).
+      numbers = 'ordinal',
     },
   },
   keys = {
     { '<S-h>', '<cmd>BufferLineCyclePrev<CR>', desc = 'Previous tab' },
     { '<S-l>', '<cmd>BufferLineCycleNext<CR>', desc = 'Next tab' },
     { '<leader>bd', '<cmd>bdelete<CR>', desc = '[B]uffer: [d]elete (close tab)' },
-    -- <leader>t1-t9, not <leader>1-9 -- harpoon.lua's own <leader>1-7 jump
-    -- keys silently won them (identical key sequences, not a
-    -- prefix/timeoutlen situation -- whichever plugin's vim.keymap.set or
-    -- lazy.nvim `keys` entry ran last simply overwrote the other's), so
-    -- only <leader>8/9 ever actually worked as tab-jumps. Verified via
-    -- vim.fn.maparg after a real startup, not assumed.
-    { '<leader>t1', function() require('bufferline').go_to(1, true) end, desc = 'Go to tab 1' },
-    { '<leader>t2', function() require('bufferline').go_to(2, true) end, desc = 'Go to tab 2' },
-    { '<leader>t3', function() require('bufferline').go_to(3, true) end, desc = 'Go to tab 3' },
-    { '<leader>t4', function() require('bufferline').go_to(4, true) end, desc = 'Go to tab 4' },
-    { '<leader>t5', function() require('bufferline').go_to(5, true) end, desc = 'Go to tab 5' },
-    { '<leader>t6', function() require('bufferline').go_to(6, true) end, desc = 'Go to tab 6' },
-    { '<leader>t7', function() require('bufferline').go_to(7, true) end, desc = 'Go to tab 7' },
-    { '<leader>t8', function() require('bufferline').go_to(8, true) end, desc = 'Go to tab 8' },
-    { '<leader>t9', function() require('bufferline').go_to(9, true) end, desc = 'Go to tab 9' },
+    { '<leader>1', function() require('bufferline').go_to(1, true) end, desc = 'Go to tab 1' },
+    { '<leader>2', function() require('bufferline').go_to(2, true) end, desc = 'Go to tab 2' },
+    { '<leader>3', function() require('bufferline').go_to(3, true) end, desc = 'Go to tab 3' },
+    { '<leader>4', function() require('bufferline').go_to(4, true) end, desc = 'Go to tab 4' },
+    { '<leader>5', function() require('bufferline').go_to(5, true) end, desc = 'Go to tab 5' },
+    { '<leader>6', function() require('bufferline').go_to(6, true) end, desc = 'Go to tab 6' },
+    { '<leader>7', function() require('bufferline').go_to(7, true) end, desc = 'Go to tab 7' },
+    { '<leader>8', function() require('bufferline').go_to(8, true) end, desc = 'Go to tab 8' },
+    { '<leader>9', function() require('bufferline').go_to(9, true) end, desc = 'Go to tab 9' },
   },
 }
