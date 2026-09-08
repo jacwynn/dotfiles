@@ -169,6 +169,13 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Neovim's default cmdheight (1) permanently reserves a blank row below the
+-- statusline for typed commands/messages -- with tmux's own status bar
+-- directly beneath it, that showed up as a visible empty strip wedged
+-- between the two. 0 reclaims that row entirely; commands/messages appear
+-- as a temporary overlay instead when actually needed.
+vim.o.cmdheight = 0
+
 -- Fold based on actual code structure (via treesitter) instead of the
 -- default foldmethod=manual, which requires manually defining every fold
 -- yourself and is unusable for the usual "collapse this function" workflow.
