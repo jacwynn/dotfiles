@@ -123,7 +123,27 @@ Prefix is `C-space`.
 | `C-space r` | Reload `~/.tmux.conf` |
 | `C-k` | Clear scrollback history |
 
+## OmniWM — [omniwm.md](omniwm.md)
+
+The window manager actually in daily use.
+
+| Key | Action |
+|---|---|
+| `Option-h/j/k/l` | Focus window left/down/up/right |
+| `Option-Shift-h/j/k/l` | Move focused window left/down/up/right (swaps with whatever's there) |
+| `Control-Option-Shift-h/j/k/l` | Move focused window to the monitor left/down/up/right |
+| `Option-Shift-D` | Toggle the current workspace's layout (niri ↔ dwindle) |
+| `Option-Shift-B` | Balance sizes — reset all windows/columns to even proportions |
+| `Option-Return` | Toggle fullscreen |
+| `Option-1`..`9` | Switch to workspace 1-9 |
+| `Option-Shift-1`..`9` | Send focused window to workspace 1-9 |
+| `Control-Option-Space` | Open the command palette |
+| `Option-Shift-O` | Toggle overview (every window, every workspace) |
+| `Option-Grave` (backtick) | Toggle the built-in quake terminal |
+
 ## AeroSpace — [aerospace.md](aerospace.md)
+
+**Kept installed as a fallback, not in daily use.**
 
 | Key | Action |
 |---|---|
