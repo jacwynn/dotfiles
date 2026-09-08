@@ -174,12 +174,16 @@ The window manager actually in daily use.
 
 ## AeroSpace — [aerospace.md](aerospace.md)
 
-**Kept installed as a fallback, not in daily use.**
+**Kept installed as a fallback, not in daily use** — kept in sync with OmniWM's bindings where AeroSpace has an equivalent feature (`Alt` and `Option` are the same key).
 
 | Key | Action |
 |---|---|
 | `Alt-h/j/k/l` | Focus window left/down/up/right |
 | `Alt-Shift-h/j/k/l` | Move focused window left/down/up/right |
+| `Alt-Ctrl-h/j/k/l` | Join focused window with its neighbor into one split container |
+| `Alt-Minus` / `Alt-Equal` | Resize the focused window smaller/larger |
+| `Alt-Shift-B` | Balance sizes — reset all windows to even proportions |
+| `Alt-Ctrl-Shift-h/j/k/l` | Move focused window to the monitor left/down/up/right |
 | `Alt-Enter` | Toggle fullscreen |
 | `Alt-Shift-Space` | Toggle floating |
 | `Alt-/` | Toggle tiling orientation |
@@ -187,4 +191,5 @@ The window manager actually in daily use.
 | `Alt-1`..`9` | Switch to workspace 1-9 |
 | `Alt-Shift-1`..`9` | Send focused window to workspace 1-9 |
 | `Alt-c` / `Alt-x` | Switch to workspace C (Ghostty) / X (Chrome), auto-assigned on window open |
+| `Alt-e` / `Alt-t` / `Alt-n` | Switch to workspace E/T/N and launch/focus Outlook/Teams/Notion |
 | `Alt-Shift-r` | Reload `~/.aerospace.toml` |

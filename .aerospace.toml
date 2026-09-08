@@ -95,6 +95,21 @@ alt-ctrl-l = 'join-with right'
 alt-minus = 'resize smart -50'
 alt-equal = 'resize smart +50'
 
+# Reset all windows in the workspace back to even proportions -- matches
+# OmniWM's Option-Shift-B (balanceSizes), kept identical across both since
+# some machines run AeroSpace and others run OmniWM (see omniwm.md) and
+# switching between them should feel as close to the same as each tool's
+# actual feature set allows.
+alt-shift-b = 'balance-sizes'
+
+# Move the focused window to the monitor in that direction -- matches
+# OmniWM's Control-Option-Shift-h/j/k/l (moveWindowToMonitor), same
+# cross-tool consistency goal as balance-sizes above.
+alt-ctrl-shift-h = 'move-node-to-monitor left'
+alt-ctrl-shift-j = 'move-node-to-monitor down'
+alt-ctrl-shift-k = 'move-node-to-monitor up'
+alt-ctrl-shift-l = 'move-node-to-monitor right'
+
 # Reload this config after editing it, without restarting AeroSpace
 alt-shift-r = 'reload-config'
 
