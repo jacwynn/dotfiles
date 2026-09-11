@@ -12,20 +12,13 @@ Leader is `<space>`.
 | `<leader>sf` | Find files |
 | `<leader>sg` | Live grep |
 | `<leader>sw` | Grep word under cursor |
-| `<leader><leader>` | Switch buffers (Telescope) |
+| `<leader><leader>` | Switch buffers (Telescope, sorted most-recently-used first) |
 | `<leader>/` | Fuzzy search current buffer |
 | `<leader>j` | Flash: jump to a visible location (type 1-2 chars, press the label) |
 | `<leader>s.` | Recent files |
 | `<leader>sd` | Search diagnostics |
 | `<leader>sh` | Search help |
 | `<leader>sk` | Search keymaps |
-
-**Tabs (bufferline)**
-| Key | Action |
-|---|---|
-| `Shift-H` / `Shift-L` | Previous / next tab |
-| `<leader>1` .. `9` | Jump straight to tab N by position (shown on the tab itself) |
-| `<leader>bd` | Close current tab |
 
 **File explorer (mini.files)**
 | Key | Action |

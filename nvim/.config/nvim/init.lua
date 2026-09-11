@@ -91,11 +91,11 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
--- Flipped on for bufferline.nvim's tab icons (see
--- lua/custom/plugins/bufferline.lua) -- this setup's terminal font already
--- renders private-use glyphs fine elsewhere (winbar/statusline's powerline
+-- Flipped on from kickstart's stock `false` -- this setup's terminal font
+-- already renders private-use glyphs fine (winbar/statusline's powerline
 -- arrows, gitsigns' solid bar), so this was more a stale leftover default
--- than a real constraint.
+-- than a real constraint. Enables file-type icons in Telescope,
+-- mini.statusline, and nvim-web-devicons generally.
 vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
@@ -599,7 +599,20 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
       vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      -- sort_mru: order the whole list by most-recently-used instead of
+      -- buffer-number order -- the file you were just in floats to the top,
+      -- so after a day of feature-hopping the handful of files you're
+      -- actually bouncing between are always right there, with the pile of
+      -- stale buffers sitting harmlessly further down. sort_lastused
+      -- additionally pre-selects the last-used entry, so hitting <CR>
+      -- without moving the cursor toggles straight back to the previous
+      -- buffer (like <C-^>, but through the same fuzzy-searchable list).
+      vim.keymap.set(
+        'n',
+        '<leader><leader>',
+        function() builtin.buffers { sort_mru = true, sort_lastused = true } end,
+        { desc = '[ ] Find existing buffers' }
+      )
 
       -- Add Telescope-based LSP pickers when an LSP attaches to a buffer.
       -- If you later switch picker plugins, this is where to update these mappings.
