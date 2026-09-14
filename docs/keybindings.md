@@ -176,6 +176,6 @@ The window manager actually in daily use.
 | `Alt-,` | Accordion layout |
 | `Alt-1`..`9` | Switch to workspace 1-9 |
 | `Alt-Shift-1`..`9` | Send focused window to workspace 1-9 |
-| `Alt-c` / `Alt-x` | Switch to workspace C (Ghostty) / X (Chrome), auto-assigned on window open |
-| `Alt-e` / `Alt-t` / `Alt-n` | Switch to workspace E/T/N and launch/focus Outlook/Teams/Notion |
 | `Alt-Shift-r` | Reload `~/.aerospace.toml` |
+
+App-to-app switching is Raycast, not named workspaces — works the same regardless of which window manager/machine is running.

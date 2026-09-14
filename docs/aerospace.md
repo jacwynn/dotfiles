@@ -33,17 +33,8 @@ Not in default `homebrew-cask` — it lives in the author's own tap (`nikitabobk
 |---|---|
 | `Alt-1` … `Alt-9` | Switch to workspace 1-9 |
 | `Alt-Shift-1` … `Alt-Shift-9` | Send the focused window to workspace 1-9 |
-| `Alt-c` | Switch to workspace `C` (Ghostty) |
-| `Alt-x` | Switch to workspace `X` (Chrome) |
-| `Alt-e` | Switch to workspace `E` and launch/focus Outlook |
-| `Alt-t` | Switch to workspace `T` and launch/focus Teams |
-| `Alt-n` | Switch to workspace `N` and launch/focus Notion |
 
-`Alt-c`/`Alt-x` are paired with `[[on-window-detected]]` rules (matched by `app-id`) that auto-move Ghostty/Chrome to their named workspace the moment either opens a new window — so the keys land on the right app even before it's running yet, not just once it's already there. `Alt-e`/`Alt-t`/`Alt-n` do the same, plus actually launch the app (`open -a`) rather than assuming it's already running.
-
-**Unverified bundle IDs**: Outlook and Teams aren't installed on the machine these were written on, so their `on-window-detected` rules are sourced from documentation/a disagreeing live lookup rather than a confirmed install — check with `aerospace list-apps` while the real app is running if the rule doesn't fire, and fix `.aerospace.toml` to match. Notion's `notion.id` bundle ID *is* confirmed (from a leftover `~/Library/Preferences/notion.id.plist` on that machine), just not currently installed there either.
-
-**Caveat:** the auto-move rule fires per new window, not continuously — an existing window already sitting in another workspace (e.g. a browser window placed side-by-side with another app in workspace 2) is left alone. But a *new* Chrome window (`Cmd-N`, "open in new window", etc.) gets pulled into workspace `X` regardless of intent, since the rule can't distinguish "a new testing window I want to keep next to something else" from any other new Chrome window. If that happens and you wanted it elsewhere, `Alt-Shift-<workspace number>` immediately sends the focused window back to where you actually wanted it. Using a new *tab* instead of a new *window* sidesteps the rule entirely, if that works for what you're doing.
+Named per-app workspaces (`Alt-c`/`Alt-x`/`Alt-e`/`Alt-t`/`Alt-n`, each paired with an `[[on-window-detected]]` rule auto-moving that app there) were tried and removed — switched to Raycast for app-to-app switching instead, which works identically regardless of which window manager/machine is running (OmniWM here, AeroSpace on a machine that can't run OmniWM), rather than maintaining two different window managers' worth of named-workspace bindings in parallel.
 
 **Config**
 | Key | Action |
