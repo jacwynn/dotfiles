@@ -598,7 +598,63 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
-      vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
+      -- <leader>gs: Telescope's own "open file" action for this picker lands
+      -- at line 1 regardless of where the actual change is, so this wraps it
+      -- to also jump to the first changed hunk (gitsigns.nav_hunk) once
+      -- gitsigns has actually computed hunks for that buffer. That's not
+      -- guaranteed to be true the instant the buffer opens -- gitsigns
+      -- attaches and diffs asynchronously -- so this checks
+      -- gitsigns.get_hunks() first and, if it's not ready yet, waits for the
+      -- documented `User GitSignsUpdate` autocmd (fired "after Gitsigns
+      -- updates its knowledge about hunks", with the buffer number in its
+      -- data) instead of guessing with a fixed delay.
+      local function jump_to_first_hunk_when_ready(bufnr)
+        local gitsigns = require 'gitsigns'
+        local function do_jump()
+          -- Guard against the user having already moved on to a different
+          -- buffer by the time a delayed GitSignsUpdate fires below.
+          if vim.api.nvim_get_current_buf() == bufnr then gitsigns.nav_hunk('first', { navigation_message = false }) end
+        end
+
+        if gitsigns.get_hunks(bufnr) ~= nil then
+          do_jump()
+          return
+        end
+
+        local group = vim.api.nvim_create_augroup('telescope_git_status_jump_' .. bufnr, { clear = true })
+        vim.api.nvim_create_autocmd('User', {
+          pattern = 'GitSignsUpdate',
+          group = group,
+          callback = function(ev)
+            -- Confirmed via testing: gitsigns fires GitSignsUpdate more than
+            -- once per attach -- an early head-only update lands before the
+            -- diff/hunks are actually computed. Re-check get_hunks() here
+            -- rather than acting (and unsubscribing) on the first event,
+            -- or this fires too early and the real hunks are missed.
+            if ev.data and ev.data.buffer == bufnr and gitsigns.get_hunks(bufnr) ~= nil then
+              do_jump()
+              vim.api.nvim_del_augroup_by_id(group)
+            end
+          end,
+        })
+        -- Safety net: if gitsigns never attaches to this buffer for some
+        -- reason, don't leave a dangling autocmd group around forever.
+        vim.defer_fn(function() pcall(vim.api.nvim_del_augroup_by_id, group) end, 5000)
+      end
+
+      vim.keymap.set('n', '<leader>gs', function()
+        builtin.git_status {
+          -- Telescope composes this with git_status's own built-in
+          -- attach_mappings (the <Tab> stage-toggle) rather than replacing
+          -- it -- see telescope.pickers' opts/defaults merge.
+          attach_mappings = function()
+            require('telescope.actions').select_default:enhance {
+              post = function() jump_to_first_hunk_when_ready(vim.api.nvim_get_current_buf()) end,
+            }
+            return true
+          end,
+        }
+      end, { desc = '[G]it [S]tatus' })
       -- sort_mru: order the whole list by most-recently-used instead of
       -- buffer-number order -- the file you were just in floats to the top,
       -- so after a day of feature-hopping the handful of files you're
@@ -820,6 +876,12 @@ require('lazy').setup({
         -- already include `html`, which covers .isml (mapped to html in
         -- custom/filetype.lua).
         emmet_language_server = {},
+
+        -- PHP/Laravel. Free tier covers autocomplete, diagnostics, go-to-def,
+        -- hover, and signature help -- the paid license only unlocks a few
+        -- large-codebase conveniences (unlimited references search, etc.)
+        -- that a single project at a time won't hit.
+        intelephense = {},
 
         stylua = {}, -- Used to format Lua code
 
@@ -1379,7 +1441,7 @@ require('lazy').setup({
     config = function()
       local parsers = {
         'bash', 'c', 'css', 'diff', 'html', 'javascript', 'json', 'lua', 'luadoc',
-        'markdown', 'markdown_inline', 'query', 'scss', 'tsx', 'typescript', 'vim', 'vimdoc',
+        'markdown', 'markdown_inline', 'php', 'query', 'scss', 'tsx', 'typescript', 'vim', 'vimdoc',
       }
 
       local has_classic, classic_configs = pcall(require, 'nvim-treesitter.configs')

@@ -72,7 +72,7 @@ Leader is `<space>`.
 **Git (gitsigns)**
 | Key | Action |
 |---|---|
-| `<leader>gs` | Telescope git status — all changed files, live diff preview |
+| `<leader>gs` | Telescope git status — all changed files, live diff preview. Selecting a file jumps to its first changed hunk instead of line 1 |
 | `<leader>hb` | Blame current line (full popup) |
 | `<leader>tb` | Toggle inline blame |
 | `<leader>hp` | Preview hunk diff |
