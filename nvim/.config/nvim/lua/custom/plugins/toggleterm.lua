@@ -32,6 +32,23 @@ local function toggle_lazygit()
       hidden = true,
       direction = 'float',
       float_opts = { border = 'curved' },
+      -- lazygit's own TUI doesn't bind a bare <Esc> to quit from every
+      -- screen the way 'q' does -- at the main view it's often a no-op, so
+      -- without this a single <Esc> here does nothing, unlike every other
+      -- floating popup in this config (Telescope, mini.files, ...), which
+      -- all close on the first <Esc>. Mapped buffer-locally rather than
+      -- globally -- plain `<leader>tt` terminals should keep sending a
+      -- single <Esc> straight through to whatever's actually running in
+      -- them -- with `nowait` so Neovim fires it immediately instead of
+      -- waiting out the global `<Esc><Esc>` exit-terminal-mode mapping's
+      -- timeout first (both share the `<Esc>` prefix, so without `nowait`
+      -- this would otherwise introduce a `timeoutlen`-long pause). Hides
+      -- rather than kills the process -- same semantics as <leader>gg
+      -- itself and the numbered terminals above, so reopening lands back
+      -- exactly where you left off instead of a fresh lazygit instance.
+      on_open = function(term)
+        vim.keymap.set('t', '<Esc>', function() term:toggle() end, { buffer = term.bufnr, nowait = true, desc = 'Hide lazygit' })
+      end,
     }
   lazygit:toggle()
 end

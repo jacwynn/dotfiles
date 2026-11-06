@@ -33,7 +33,7 @@ Leader is `<space>`.
 | Key | Action |
 |---|---|
 | `<leader>tt` | Toggle a floating terminal (prefix with a count, e.g. `2<leader>tt`, for another independent one) |
-| `<leader>gg` | Toggle lazygit, in its own dedicated terminal |
+| `<leader>gg` | Toggle lazygit, in its own dedicated terminal. `<Esc>` hides it (same as pressing `<leader>gg` again); `q` quits lazygit itself |
 
 **Sessions (persistence.nvim)**
 | Key | Action |
