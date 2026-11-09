@@ -113,7 +113,17 @@ link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/.aerospace.toml" "$HOME/.aerospace.toml"
 link "$DOTFILES_DIR/omniwm/.config/omniwm/settings.toml" "$HOME/.config/omniwm/settings.toml"
 link "$DOTFILES_DIR/lazygit/Library/Application Support/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
-link "$DOTFILES_DIR/ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+# Ghostty creates an empty config.ghostty the first time it's ever launched
+# -- if that happened before this script ran, `link` would see a real (if
+# empty) file already there and skip rather than overwrite it, same as it
+# would for a genuinely customized one. Safe to clear out specifically
+# because it's empty; a non-empty file is left alone, same as `link`
+# already does for everything else.
+GHOSTTY_CONFIG_DEST="$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+if [ -f "$GHOSTTY_CONFIG_DEST" ] && [ ! -s "$GHOSTTY_CONFIG_DEST" ]; then
+  rm "$GHOSTTY_CONFIG_DEST"
+fi
+link "$DOTFILES_DIR/ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty" "$GHOSTTY_CONFIG_DEST"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo
