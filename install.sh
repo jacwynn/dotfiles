@@ -213,6 +213,14 @@ else
 fi
 
 echo
+echo "== Herdr (terminal/coding-agent workspace app) =="
+if brew list --cask herdr-app >/dev/null 2>&1; then
+  echo "ok:      herdr already installed"
+else
+  brew install --cask herdr-app
+fi
+
+echo
 echo "== Node (for ts_ls / eslint / prettier) =="
 if [ -s "$HOME/.nvm/nvm.sh" ]; then
   echo "ok:      nvm already installed"
