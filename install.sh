@@ -226,13 +226,30 @@ fi
 
 echo
 echo "== Herdr (terminal/coding-agent workspace, TUI) =="
-# The `herdr` formula (homebrew-core) is the TUI -- separate from the
-# `herdr-app` cask, which is the GUI desktop app. TUI is the one actually
-# in use here.
-if brew list --formula herdr >/dev/null 2>&1; then
-  echo "ok:      herdr already installed"
+# Installed from the project's own GitHub release binary rather than the
+# `herdr` homebrew-core formula (TUI -- not the `herdr-app` cask, which is
+# the GUI desktop app). That formula is only bottled for arm64_tahoe
+# (macOS 26) -- anything older falls back to building from source, which
+# pulls in rust + zig as build deps and, if rust itself lacks a bottle for
+# that OS, LLVM on top of that: a build that can take over an hour and
+# still fail on an older Xcode (hit on a Sonoma 14.5 machine). The GitHub
+# binary sidesteps all of that, on any macOS version.
+HERDR_VERSION="0.9.5"
+HERDR_BIN="$(brew --prefix)/bin/herdr"
+case "$(uname -m)" in
+  arm64) HERDR_ARCH="aarch64" ;;
+  x86_64) HERDR_ARCH="x86_64" ;;
+  *) HERDR_ARCH="" ;;
+esac
+if [ -x "$HERDR_BIN" ] && "$HERDR_BIN" --version 2>/dev/null | grep -q "$HERDR_VERSION"; then
+  echo "ok:      herdr $HERDR_VERSION already installed"
+elif [ -z "$HERDR_ARCH" ]; then
+  echo "skip:    herdr -- unrecognized architecture ($(uname -m))"
 else
-  brew install herdr
+  echo "Installing herdr $HERDR_VERSION ($HERDR_ARCH) from GitHub releases..."
+  curl -fsSL -o "$HERDR_BIN" \
+    "https://github.com/herdrdev/herdr/releases/download/v${HERDR_VERSION}/herdr-macos-${HERDR_ARCH}"
+  chmod +x "$HERDR_BIN"
 fi
 
 echo
