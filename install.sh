@@ -225,11 +225,14 @@ else
 fi
 
 echo
-echo "== Herdr (terminal/coding-agent workspace app) =="
-if brew list --cask herdr-app >/dev/null 2>&1; then
+echo "== Herdr (terminal/coding-agent workspace, TUI) =="
+# The `herdr` formula (homebrew-core) is the TUI -- separate from the
+# `herdr-app` cask, which is the GUI desktop app. TUI is the one actually
+# in use here.
+if brew list --formula herdr >/dev/null 2>&1; then
   echo "ok:      herdr already installed"
 else
-  brew install --cask herdr-app
+  brew install herdr
 fi
 
 echo
