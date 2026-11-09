@@ -106,6 +106,27 @@ link() {
   echo "linked:  $dest -> $src"
 }
 
+# Same as link(), but for configs belonging to apps that scaffold their own
+# default file the first time they're launched (Ghostty, Herdr) -- without
+# this, a plain `link` sees that real (if default) file already at the
+# destination and skips rather than overwriting it, same protection it'd
+# give a genuinely hand-edited file elsewhere, just misapplied here. For
+# these specific files, the dotfiles copy is meant to be authoritative, so
+# whatever the app scaffolded gets replaced outright.
+force_link() {
+  local src="$1" dest="$2"
+  if [ -L "$dest" ] && [ "$dest" -ef "$src" ]; then
+    echo "ok:      $dest -> $src"
+    return
+  fi
+  if [ -e "$dest" ] || [ -L "$dest" ]; then
+    rm -rf "$dest"
+  fi
+  mkdir -p "$(dirname "$dest")"
+  ln -s "$src" "$dest"
+  echo "linked:  $dest -> $src"
+}
+
 echo "== Symlinking configs =="
 link "$DOTFILES_DIR/nvim/.config/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
@@ -113,19 +134,9 @@ link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/.aerospace.toml" "$HOME/.aerospace.toml"
 link "$DOTFILES_DIR/omniwm/.config/omniwm/settings.toml" "$HOME/.config/omniwm/settings.toml"
 link "$DOTFILES_DIR/lazygit/Library/Application Support/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
-# Ghostty creates an empty config.ghostty the first time it's ever launched
-# -- if that happened before this script ran, `link` would see a real (if
-# empty) file already there and skip rather than overwrite it, same as it
-# would for a genuinely customized one. Safe to clear out specifically
-# because it's empty; a non-empty file is left alone, same as `link`
-# already does for everything else.
-GHOSTTY_CONFIG_DEST="$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
-if [ -f "$GHOSTTY_CONFIG_DEST" ] && [ ! -s "$GHOSTTY_CONFIG_DEST" ]; then
-  rm "$GHOSTTY_CONFIG_DEST"
-fi
-link "$DOTFILES_DIR/ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty" "$GHOSTTY_CONFIG_DEST"
-link "$DOTFILES_DIR/herdr/.config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
-link "$DOTFILES_DIR/herdr/.config/herdr-app/settings.json" "$HOME/.config/herdr-app/settings.json"
+force_link "$DOTFILES_DIR/ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+force_link "$DOTFILES_DIR/herdr/.config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+force_link "$DOTFILES_DIR/herdr/.config/herdr-app/settings.json" "$HOME/.config/herdr-app/settings.json"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo
