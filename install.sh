@@ -124,6 +124,8 @@ if [ -f "$GHOSTTY_CONFIG_DEST" ] && [ ! -s "$GHOSTTY_CONFIG_DEST" ]; then
   rm "$GHOSTTY_CONFIG_DEST"
 fi
 link "$DOTFILES_DIR/ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty" "$GHOSTTY_CONFIG_DEST"
+link "$DOTFILES_DIR/herdr/.config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+link "$DOTFILES_DIR/herdr/.config/herdr-app/settings.json" "$HOME/.config/herdr-app/settings.json"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo
