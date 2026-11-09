@@ -23,7 +23,7 @@
 -- DiagnosticError -- so both stay correct if the colorscheme ever changes.
 --
 -- Only shown for normal, listed file buffers -- skipped for terminals,
--- pickers, the mini.files explorer, etc (anything with a non-empty
+-- pickers, the file explorer, etc (anything with a non-empty
 -- 'buftype', or an unlisted buffer) so it doesn't clutter special windows.
 -- Deferred (not resolved right here): this module is required before
 -- require('lazy').setup(...) even starts, so reading these highlight

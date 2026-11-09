@@ -20,14 +20,17 @@ Leader is `<space>`.
 | `<leader>sh` | Search help |
 | `<leader>sk` | Search keymaps |
 
-**File explorer (mini.files)**
+**File explorer (snacks.nvim explorer)**
 | Key | Action |
 |---|---|
-| `<leader>e` | Open at the current file's directory (falls back to cwd) |
-| Edit a line | Rename that file/directory |
-| `dd` | Delete |
-| New line with a name (`dir/` for a directory) | Create a file/directory, nested paths in one line |
-| `=` | Synchronize — apply pending changes (confirmation dialog first; *not* `:w`) |
+| `<leader>e` | Open, revealing the current file in the tree (falls back to cwd) |
+| `a` | Add a file/directory (prompt; end name with `/` for a directory) |
+| `r` | Rename |
+| `d` | Delete (to system trash) |
+| `c` / `m` | Copy / move |
+| `<Tab>` | Multi-select |
+| `<CR>` / `l` | Open file / expand directory |
+| `h` | Collapse directory |
 
 **Terminal**
 | Key | Action |
