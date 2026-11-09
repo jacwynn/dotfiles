@@ -113,6 +113,7 @@ link "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/.aerospace.toml" "$HOME/.aerospace.toml"
 link "$DOTFILES_DIR/omniwm/.config/omniwm/settings.toml" "$HOME/.config/omniwm/settings.toml"
 link "$DOTFILES_DIR/lazygit/Library/Application Support/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
+link "$DOTFILES_DIR/ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
 # oh-my-zsh itself is managed by its own installer/updater, not this script.
 
 echo

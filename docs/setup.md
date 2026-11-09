@@ -9,6 +9,7 @@
 omniwm/.config/omniwm/settings.toml                     -> ~/.config/omniwm/settings.toml
 nvim/.config/nvim/                                       -> ~/.config/nvim
 lazygit/Library/Application Support/lazygit/config.yml  -> ~/Library/Application Support/lazygit/config.yml
+ghostty/Library/Application Support/com.mitchellh.ghostty/config.ghostty -> ~/Library/Application Support/com.mitchellh.ghostty/config.ghostty
 install.sh                                                bootstrap script for a new machine
 docs/                                                      one doc per feature/configuration (this file included)
 ```
@@ -27,7 +28,7 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 ```
 
 `install.sh` is idempotent (safe to re-run) and:
-- symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, OmniWM's `settings.toml`, the nvim config, and lazygit's `config.yml` into place
+- symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, OmniWM's `settings.toml`, the nvim config, lazygit's `config.yml`, and Ghostty's `config.ghostty` into place
 - installs Xcode Command Line Tools / Homebrew if missing
 - installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, `tmux`, and a Nerd Font
 - installs OmniWM, the window manager actually in daily use (see [omniwm.md](omniwm.md))
