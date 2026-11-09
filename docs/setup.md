@@ -30,7 +30,7 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 `install.sh` is idempotent (safe to re-run) and:
 - symlinks `.zshrc`, `.tmux.conf`, `.aerospace.toml`, OmniWM's `settings.toml`, the nvim config, lazygit's `config.yml`, and Ghostty's `config.ghostty` into place
 - installs Xcode Command Line Tools / Homebrew if missing
-- installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, `tmux`, and a Nerd Font
+- installs `neovim`, `git`, `ripgrep`, `fd`, `tree-sitter-cli`, `tmux`, a Nerd Font (icons in nvim/tmux/statusline), and plain JetBrains Mono (Ghostty's terminal font)
 - installs OmniWM, the window manager actually in daily use (see [omniwm.md](omniwm.md))
 - taps `nikitabobko/tap` and installs AeroSpace if missing — kept as a fallback, not in daily use (see [aerospace.md](aerospace.md))
 - installs `nvm` + Node LTS if missing

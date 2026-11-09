@@ -176,6 +176,17 @@ else
   echo "ok:      JetBrains Mono Nerd Font already installed"
 fi
 
+# Plain (non-Nerd-Font) JetBrains Mono -- what Ghostty's config.ghostty
+# (symlinked below) actually points font-family at. Separate cask from the
+# Nerd Font one above: that one's icon glyphs are for nvim/tmux/statusline,
+# this is just the terminal's everyday text face.
+if ! brew list --cask font-jetbrains-mono >/dev/null 2>&1; then
+  echo "Installing JetBrains Mono for Ghostty..."
+  brew install --cask font-jetbrains-mono
+else
+  echo "ok:      JetBrains Mono already installed"
+fi
+
 echo
 echo "== OmniWM (tiling window manager) =="
 # The one actually in daily use -- see omniwm.md. AeroSpace (below) is kept
