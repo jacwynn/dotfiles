@@ -118,6 +118,23 @@ Leader is `<space>`.
 | `<C-h/j/k/l>` | Move between debug UI panels (they're regular splits) |
 | `<CR>` / `o` / `w` / `d` / `e` / `r` | Expand / jump to source / add watch / remove / edit watch / send to REPL |
 
+## Herdr — [herdr.md](herdr.md)
+
+Prefix is `ctrl+space`.
+
+| Key | Action |
+|---|---|
+| `ctrl+h/j/k/l` | Focus pane left/down/up/right (direct, no prefix needed) |
+| `prefix+\|` / `prefix+-` | Split vertical / horizontal (matches tmux's own `C-space \|`/`C-space -`) |
+| `prefix+x` | Close pane |
+| `prefix+z` | Zoom (toggle fullscreen) pane |
+| `prefix+c` | New tab |
+| `prefix+n` / `prefix+p` | Next / previous tab |
+| `prefix+w` | Workspace picker |
+| `prefix+g` | Goto |
+| `prefix+s` | Settings |
+| `prefix+q` | Detach |
+
 ## Tmux — [tmux.md](tmux.md)
 
 Prefix is `C-space`.

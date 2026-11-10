@@ -16,6 +16,7 @@ git clone https://github.com/jacwynn/dotfiles.git ~/dotfiles
 | [docs/debugging.md](docs/debugging.md) | `nvim-dap` + `nvim-dap-ui`, including the SFCC/Demandware Prophet adapter |
 | [docs/sfcc.md](docs/sfcc.md) | Everything SFCC/Demandware-specific: `dw.json`, cartridge detection, `nvim_dw_sync`, format-on-save and whitespace exceptions |
 | [docs/tmux.md](docs/tmux.md) | tmux config and keybindings |
+| [docs/herdr.md](docs/herdr.md) | Herdr terminal workspace manager — config, prefix, pane-nav keybindings |
 | [docs/omniwm.md](docs/omniwm.md) | OmniWM tiling window manager (the one in daily use) |
 | [docs/aerospace.md](docs/aerospace.md) | AeroSpace tiling window manager (kept as a fallback) |
 | [docs/keybindings.md](docs/keybindings.md) | Every keybinding across all of the above, in one page |
